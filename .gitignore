@@ -5,6 +5,7 @@ open-webui/
 venv/
 
 old/
+litellm-upstream/
 
 # Ignore common OS files
 .DS_Store
