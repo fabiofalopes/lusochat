@@ -1,0 +1,54 @@
+services:
+  open-webui-lusofona:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui-lusofona
+    ports:
+      - "3000:8080" # Open WebUI will be accessible on port 3000
+    environment:
+      # == Generic Open WebUI Settings ==
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-someRandomSecretValuePleaseChange}
+      - WEBUI_NAME=${WEBUI_NAME:-Open WebUI Lusófona}
+      - GLOBAL_LOG_LEVEL=${GLOBAL_LOG_LEVEL:-INFO}
+      - CUSTOM_NAME=${CUSTOM_NAME:-Lusófona WebUI}
+
+      # == Ollama Configuration (Required if Ollama is run separately) ==
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
+
+      # == API Keys (Optional - for additional AI model support if not using local Ollama) ==
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+
+      # == OIDC Configuration ==
+      - ENABLE_OAUTH_SIGNUP=${ENABLE_OAUTH_SIGNUP:-true}
+      - OAUTH_MERGE_ACCOUNTS_BY_EMAIL=${OAUTH_MERGE_ACCOUNTS_BY_EMAIL:-false}
+      - OAUTH_PROVIDER_NAME=${OAUTH_PROVIDER_NAME:-My University SSO}
+      - OPENID_PROVIDER_URL=${OPENID_PROVIDER_URL}
+      - OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID}
+      - OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
+      - OAUTH_SCOPES=${OAUTH_SCOPES:-openid email profile}
+
+      # Login form (can be enabled alongside OIDC or disabled if OIDC is the only method)
+      - ENABLE_LOGIN_FORM=${ENABLE_LOGIN_FORM:-true}
+
+      # Security Headers for Cookies
+      # IMPORTANT: If you are NOT running a reverse proxy with SSL termination
+      # upstream (like Nginx was) and will access Open WebUI directly via HTTP,
+      # you should set the ..._COOKIE_SECURE variables to false.
+      # If you later add another proxy with SSL, set them back to true.
+      - WEBUI_SESSION_COOKIE_SAME_SITE=${WEBUI_SESSION_COOKIE_SAME_SITE:-Lax}
+      - WEBUI_AUTH_COOKIE_SAME_SITE=${WEBUI_AUTH_COOKIE_SAME_SITE:-Lax}
+      - WEBUI_SESSION_COOKIE_SECURE=${WEBUI_SESSION_COOKIE_SECURE:-true} # Consider setting to false if no SSL
+      - WEBUI_AUTH_COOKIE_SECURE=${WEBUI_AUTH_COOKIE_SECURE:-true}   # Consider setting to false if no SSL
+    volumes:
+      - open-webui:/app/backend/data
+    restart: always
+    networks:
+      - ulht-web-ui_default
+
+volumes:
+  open-webui:
+    external: true
+
+networks:
+  ulht-web-ui_default:
+    external: true

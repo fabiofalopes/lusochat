@@ -1,0 +1,17 @@
+# Ignore the cloned and customized Open WebUI directory
+open-webui/
+.env
+.venv/
+venv/
+
+old/
+
+# Ignore common OS files
+.DS_Store
+Thumbs.db
+
+# Ignore common IDE/editor directories
+.vscode/
+.idea/
+*.swp
+*.swo 
