@@ -1,67 +1,174 @@
-# `.litellm-lusofona` Customization Layer for litellm-lusofona
+# Lusochat LiteLLM Configuration Layer
 
-This folder contains all custom configuration, Docker, and orchestration files for running your own fork of the `litellm-lusofona` project, without modifying the main repo code. It enables you to:
+This directory contains all custom configuration files for the **Lusochat LiteLLM** deployment. Our approach uses a "deployment-time overlay" strategy that keeps upstream code untouched while applying Lusófona-specific configurations.
 
-- Keep your custom configs, scripts, and compose files separate from upstream code
-- Easily sync with the main repo without merge conflicts
-- Overlay your own settings, secrets, and deployment logic
+## 🎯 Strategy: Configuration Overlay (Not Fork)
 
-## How it works
-- **Docker and Compose**: Custom `Dockerfile` and `docker-compose.yml` here use the parent repo as build context, but overlay configs/scripts from `.litellm-lusofona`.
-- **Configs**: Place your `config.yaml`, `.env`, and any other custom files here. They will be used by the containers at runtime.
-- **No upstream changes**: The main repo code stays untouched, making it easy to pull updates from upstream.
+**We use a clean overlay approach:**
+- ✅ Clone fresh upstream LiteLLM repository via `deploy_litellm.py`
+- ✅ Copy our custom configs from `.litellm-lusofona/` to the cloned repo
+- ✅ Deploy using Docker Compose with the upstream image
+- ✅ Keep all customizations separate and trackable
 
-## Usage
-1. Place your custom configs (e.g., `config.yaml`, `.env`, `prometheus.yml`) in `.litellm-lusofona`.
-2. From inside `.litellm-lusofona`, run:
-   ```bash
-   docker compose up -d
-   ```
-   Or, to control resource naming, use:
-   ```bash
-   docker compose -p litellm-lusofona up -d
-   ```
-3. The services will build using the main repo code, but with your customizations applied.
+**This is NOT a fork approach** - we never modify upstream code, just overlay configurations.
 
-## Troubleshooting & Lessons Learned
+## 📁 Configuration Files
 
-### License Verification
-- The LiteLLM proxy requires a valid license for premium features (like Prometheus metrics).
-- Set your license key in `.env` as `LITELLM_LICENSE=your_license_key`.
-- The `.env` file must be present in `.litellm-lusofona` and referenced in `docker-compose.yml` via `env_file: - .env`.
-- If you see license verification timeouts, check:
-  - The license key is correct and present in the environment (use `docker compose exec litellm env | grep LITELLM_LICENSE`).
-  - The container has internet access to reach the license server.
+| File | Purpose | Required |
+|------|---------|----------|
+| `config.yaml` | LiteLLM model servers configuration | ✅ Yes |
+| `docker-compose.yml` | Full stack orchestration | ✅ Yes |
+| `.env` | Environment variables & secrets | ✅ Yes (copy from env.example) |
+| `env.example` | Template for environment setup | ℹ️ Reference |
+| `NOTE_MODIFICATIONS.md` | Change tracking & documentation | ℹ️ Documentation |
 
-### Prometheus Metrics
-- Prometheus metrics are only available with a valid LiteLLM Enterprise license.
-- If you do not have a license, you will see warnings, but the service will still run.
-- To suppress these warnings, remove Prometheus callbacks from your config and related environment variables.
+## 🚀 How to Deploy
 
-### YAML Errors
-- Invalid YAML in `config.yaml` will cause the container to crash with a parser error.
-- Always validate your YAML (especially indentation and list syntax) before restarting the service.
-- Example error: `expected <block end>, but found '<block sequence start>'` means you likely have a misplaced dash or indentation issue.
+### Method 1: Python Deployment Script (Recommended)
+```bash
+# From litellm-lusofona/ directory
+python deploy_litellm.py
+```
 
-### Docker Compose Project Naming & Volumes
-- By default, Docker Compose prefixes resources (volumes, networks) with the directory name you run from (e.g., `.litellm-lusofona_`).
-- To control this, use the `-p` flag: `docker compose -p litellm-lusofona up -d`.
-- Volumes are defined in the compose file, but their actual names are prefixed by the project name.
+This automatically:
+1. Clones upstream LiteLLM to `litellm-upstream/`
+2. Copies all configs from `.litellm-lusofona/`
+3. Deploys full stack with `docker compose -p lusochat-litellm up -d`
 
-### File Mounting
-- If you mount files from the parent directory (e.g., `../prometheus.yml`), ensure the path is correct relative to `.litellm-lusofona`.
-- If a file is missing or the mount path is wrong, the container may fail to start or Prometheus may not load its config.
+### Method 2: Manual Deployment
+```bash
+# 1. Clone upstream
+git clone --depth 1 https://github.com/BerriAI/litellm.git litellm-upstream
 
-### General Debugging
-- Use `docker logs <container>` to check why a service is failing.
-- Use `docker compose exec <service> env` to check environment variables inside the container.
-- Use `yamllint` or an online YAML validator to check your config files.
+# 2. Copy our configurations
+cp .litellm-lusofona/config.yaml litellm-upstream/
+cp .litellm-lusofona/docker-compose.yml litellm-upstream/
+cp .litellm-lusofona/.env litellm-upstream/
 
-## Notes
-- If you want to use the main repo's default setup, run Docker Compose from the repo root instead.
-- To sync with upstream, just pull changes in the parent repo; your `.litellm-lusofona` folder is unaffected.
-- For more details or to track changes, see `NOTE_MODIFICATIONS.md` (if present).
+# 3. Deploy the stack
+cd litellm-upstream
+docker compose -p lusochat-litellm up -d --build
+```
+
+## 🌐 Deployed Services
+
+After deployment you'll have:
+
+- **🤖 LiteLLM Proxy**: http://localhost:4000 
+- **📊 Grafana**: http://localhost:3001 (admin/admin)
+- **📈 Prometheus**: http://localhost:9090
+- **🗄️ PostgreSQL**: Internal database (not exposed to host)
+- **⚡ Redis**: Internal cache
+
+## ⚙️ Configuration Details
+
+### Environment Variables (`.env`)
+**Important**: Copy `env.example` to `.env` and configure:
+```bash
+cp env.example .env
+# Edit .env with your actual values
+```
+
+Key variables:
+- `LITELLM_LICENSE`: Your LiteLLM license key
+- `POSTGRES_PASSWORD`: Database password
+- `REDIS_PASSWORD`: Cache password
+- `GRAFANA_ADMIN_PASSWORD`: Dashboard password
+
+### Model Configuration (`config.yaml`)
+Defines available LLM models and routing:
+- Model endpoints (192.168.108.161-166)
+- Authentication tokens
+- Rate limiting
+- Load balancing
+
+### Docker Orchestration (`docker-compose.yml`)
+Configured for Lusófona infrastructure:
+- **Security**: Database not exposed to host network
+- **Persistence**: Named volumes for data
+- **Monitoring**: Prometheus + Grafana integration
+- **Dependencies**: Proper service startup order
+
+## 🔧 Management & Troubleshooting
+
+### Service Management
+```bash
+# Check all services
+docker compose -p lusochat-litellm ps
+
+# View logs
+docker compose -p lusochat-litellm logs -f litellm
+
+# Restart specific service
+docker compose -p lusochat-litellm restart litellm
+
+# Stop everything
+docker compose -p lusochat-litellm down
+```
+
+### Common Issues & Solutions
+
+#### 🔑 License Issues
+- **Problem**: LiteLLM license verification fails
+- **Solution**: Verify `LITELLM_LICENSE` in `.env` file
+- **Check**: `docker compose exec litellm env | grep LITELLM_LICENSE`
+
+#### 📊 Prometheus Metrics
+- **Note**: Requires valid LiteLLM Enterprise license
+- **Without license**: Service runs with warnings (normal)
+- **With license**: Full metrics available in Grafana
+
+#### 🐛 YAML Configuration Errors
+- **Problem**: Service crashes with YAML parser errors
+- **Solution**: Validate `config.yaml` syntax (indentation, dashes)
+- **Tool**: Use `yamllint config.yaml` or online validator
+
+#### 🔌 Connection Issues
+- **Problem**: Services can't reach each other
+- **Solution**: Check all services are in same Docker network (`litellm-network`)
+- **Debug**: `docker network inspect lusochat-litellm_litellm-network`
+
+## 🔄 Updates & Maintenance
+
+### Updating to Latest LiteLLM
+```bash
+python deploy_litellm.py  # Will ask to remove old clone and get fresh upstream
+```
+
+### Modifying Configuration
+1. Edit files in `.litellm-lusofona/`
+2. Re-run deployment script or manually copy files
+3. Restart affected services
+
+### Backing Up Data
+```bash
+# Export volumes (databases, dashboards)
+docker volume ls | grep lusochat-litellm
+```
+
+## 🔒 Security Notes
+
+- **Database**: PostgreSQL port NOT exposed to host (security improvement)
+- **Passwords**: All passwords via environment variables, not hardcoded
+- **Secrets**: Keep `.env` file secure and out of version control
+- **Network**: Services communicate via internal Docker network
+
+## 📋 Best Practices for Maintainers
+
+1. **Keep ALL customizations in `.litellm-lusofona/`** for easy tracking
+2. **Test changes with deployment script** before production
+3. **Update `.env` from `env.example`** when new variables added
+4. **Document configuration changes** in `NOTE_MODIFICATIONS.md`
+5. **When syncing upstream**, verify our overlay still works
+
+## 💡 Why This Approach Works
+
+- ✅ **No upstream conflicts**: Never merge conflicts on updates
+- ✅ **Clean customizations**: All changes tracked in one place  
+- ✅ **Easy rollback**: Just re-deploy with different configs
+- ✅ **Team friendly**: Clear separation of custom vs. upstream
+- ✅ **Always current**: Latest upstream features automatically available
 
 ---
 
-**This setup is ideal for maintaining a clean, up-to-date fork with your own deployment logic and secrets.** 
+This approach has been **successfully tested and deployed**. All services are running and accessible as documented above. 
