@@ -10,56 +10,123 @@ model_list:
       model_alias: DeepSeek-R1-Distill-Llama-8B-Q6_K
       host_node: 192.168.108.161
 
-  - model_name: deepseek-r1-8b
+  - model_name: Qwen3-32B-128K-Q4_K_S
     litellm_params:
-      model: openai/deepseek-r1-llama-8b
+      model: openai/Qwen3-32B-128K-Q4_K_S
       api_base: http://192.168.108.162:8080
       api_key: none
       rpm: 100000
     model_info:
-      model_alias: DeepSeek-R1-Distill-Llama-8B-Q6_K
+      model_alias: Qwen3-32B-128K-Q4_K_S
       host_node: 192.168.108.162
 
-  - model_name: deepseek-r1-8b
+  # Groq Model Deployments
+  - model_name: Groq-Llama-3.3-70B-Versatile
     litellm_params:
-      model: openai/deepseek-r1-llama-8b
-      api_base: http://192.168.108.163:8080
-      api_key: none
+      model: groq/llama-3.3-70b-versatile
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
       rpm: 100000
     model_info:
-      model_alias: DeepSeek-R1-Distill-Llama-8B-Q6_K
-      host_node: 192.168.108.163
+      model_alias: Groq-Llama-3.3-70B-Versatile
+      host_node: groq
 
-  # Meta Llama Model Deployments
-  - model_name: llama-3.1-8b
+  - model_name: Groq-Llama-3.1-8B-Instant
     litellm_params:
-      model: openai/meta-llama-3-8b
-      api_base: http://192.168.108.164:8080
-      api_key: none
+      model: groq/llama-3.1-8b-instant
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
       rpm: 100000
     model_info:
-      model_alias: Meta-Llama-3.1-8B-Instruct-Q4_K_M
-      host_node: 192.168.108.164
+      model_alias: Groq-Llama-3.1-8B-Instant
+      host_node: groq
 
-  - model_name: llama-3.1-8b
+  - model_name: Groq-Mistral-8x7B-32768
     litellm_params:
-      model: openai/meta-llama-3-8b
-      api_base: http://192.168.108.165:8080
-      api_key: none
+      model: groq/mistral-8x7b-32768
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
       rpm: 100000
     model_info:
-      model_alias: Meta-Llama-3.1-8B-Instruct-Q4_K_M
-      host_node: 192.168.108.165
+      model_alias: Groq-Mistral-8x7B-32768
+      host_node: groq
 
-  - model_name: gemma3-4b
+  - model_name: Groq-DeepSeek-Llama-70B
     litellm_params:
-      model: openai/gemma3:4b
-      api_base: http://192.168.108.166:8080
-      api_key: none
+      model: groq/deepseek-llama-70b
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
       rpm: 100000
     model_info:
-      model_alias: gemma3-4b
-      host_node: 192.168.108.166
+      model_alias: Groq-DeepSeek-Llama-70B
+      host_node: groq
+
+  # SambaNova Model Deployments
+  - model_name: SambaNova-Llama-3.1-405B-Instruct
+    litellm_params:
+      model: sambanova/Meta-Llama-3.1-405B-Instruct
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      #max_tokens: 16384  # 16k context length
+    model_info:
+      model_alias: SambaNova-Llama-3.1-405B-Instruct
+      host_node: sambanova
+
+  - model_name: SambaNova-Llama-3.3-70B-Instruct
+    litellm_params:
+      model: sambanova/Meta-Llama-3.3-70B-Instruct
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      #max_tokens: 131072  # 128k context length
+    model_info:
+      model_alias: SambaNova-Llama-3.3-70B-Instruct
+      host_node: sambanova
+
+  - model_name: SambaNova-DeepSeek-R1-Distill-Llama-70B
+    litellm_params:
+      model: sambanova/DeepSeek-R1-Distill-Llama-70B
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      max_tokens: 131072  # 128k context length
+    model_info:
+      model_alias: SambaNova-DeepSeek-R1-Distill-Llama-70B
+      host_node: sambanova
+
+  - model_name: SambaNova-Llama-4-Maverick-17B-128E-Instruct
+    litellm_params:
+      model: sambanova/Llama-4-Maverick-17B-128E-Instruct
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      #max_tokens: 131072  # 128k context length
+    model_info:
+      model_alias: SambaNova-Llama-4-Maverick-17B-128E-Instruct
+      host_node: sambanova
+
+  - model_name: SambaNova-Llama-4-Scout-17B-16E-Instruct
+    litellm_params:
+      model: sambanova/Llama-4-Scout-17B-16E-Instruct
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      #max_tokens: 8192  # 8k context length
+    model_info:
+      model_alias: SambaNova-Llama-4-Scout-17B-16E-Instruct
+      host_node: sambanova
+
+  - model_name: SambaNova-Qwen3-32B
+    litellm_params:
+      model: sambanova/Qwen3-32B
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      #max_tokens: 8192  # 8k context length
+    model_info:
+      model_alias: SambaNova-Qwen3-32B
+      host_node: sambanova
 
 litellm_settings:
   callbacks: ["prometheus"]

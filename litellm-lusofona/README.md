@@ -80,6 +80,11 @@ To update to the latest LiteLLM version:
 python deploy_litellm.py  # Will prompt to remove old clone and get fresh upstream
 ```
 
+To update only the configuration (when you've modified config.yaml):
+```bash
+python deploy_litellm.py --update-config  # Updates config without full redeployment
+```
+
 Your custom configurations in `.litellm-lusofona/` remain untouched.
 
 ## 🎯 Why This Approach?

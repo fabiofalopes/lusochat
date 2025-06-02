@@ -16,6 +16,7 @@ import sys
 import subprocess
 import shutil
 from pathlib import Path
+import argparse
 
 # Configuration
 LITELLM_GIT_URL = "https://github.com/BerriAI/litellm.git"
@@ -172,6 +173,42 @@ def show_deployment_info():
     info("  🛑 Stop: docker compose -p lusochat-litellm down")
     info("=" * 60)
 
+def update_config():
+    """Update configuration in running containers without full redeployment."""
+    info("Updating LiteLLM configuration...")
+    
+    # Check if services are running
+    try:
+        result = subprocess.run(
+            ["docker", "compose", "-p", "lusochat-litellm", "ps", "--format", "json"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        if "litellm" not in result.stdout:
+            error("LiteLLM service is not running. Please start it first.")
+    except subprocess.CalledProcessError:
+        error("Failed to check service status")
+
+    # Copy new config to container
+    try:
+        info("Copying new configuration to container...")
+        subprocess.run(
+            ["docker", "cp", f"{CUSTOM_CONFIG_DIR}/config.yaml", "lusochat-litellm_litellm_1:/app/config.yaml"],
+            check=True
+        )
+        success("Configuration file copied successfully")
+        
+        # Restart the litellm service to apply changes
+        info("Restarting LiteLLM service to apply changes...")
+        subprocess.run(
+            ["docker", "compose", "-p", "lusochat-litellm", "restart", "litellm"],
+            check=True
+        )
+        success("Configuration update complete!")
+    except subprocess.CalledProcessError as e:
+        error(f"Failed to update configuration: {str(e)}")
+
 def main():
     """Main deployment function."""
     info("Starting Lusochat LiteLLM deployment...")
@@ -184,6 +221,15 @@ def main():
             error(f"{tool} is not installed or not accessible")
     
     success("All required tools found")
+    
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="Lusochat LiteLLM Deployment Script")
+    parser.add_argument("--update-config", action="store_true", help="Only update configuration without full redeployment")
+    args = parser.parse_args()
+    
+    if args.update_config:
+        update_config()
+        return
     
     # Main deployment steps
     cleanup_and_clone()
