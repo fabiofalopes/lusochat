@@ -190,24 +190,45 @@ def update_config():
     except subprocess.CalledProcessError:
         error("Failed to check service status")
 
-    # Copy new config to container
     try:
-        info("Copying new configuration to container...")
+        # Stop the litellm service first
+        info("Stopping LiteLLM service...")
         subprocess.run(
-            ["docker", "cp", f"{CUSTOM_CONFIG_DIR}/config.yaml", "lusochat-litellm_litellm_1:/app/config.yaml"],
+            ["docker", "compose", "-p", "lusochat-litellm", "stop", "litellm"],
             check=True
         )
-        success("Configuration file copied successfully")
-        
-        # Restart the litellm service to apply changes
-        info("Restarting LiteLLM service to apply changes...")
+        success("Service stopped")
+
+        # Copy the config file to the litellm-upstream directory
+        info("Updating configuration file...")
+        source_config = Path(CUSTOM_CONFIG_DIR) / "config.yaml"
+        target_config = Path(LITELLM_DIR) / "config.yaml"
+        shutil.copy2(source_config, target_config)
+        success("Configuration file updated")
+
+        # Start the litellm service again
+        info("Starting LiteLLM service...")
         subprocess.run(
-            ["docker", "compose", "-p", "lusochat-litellm", "restart", "litellm"],
+            ["docker", "compose", "-p", "lusochat-litellm", "start", "litellm"],
             check=True
         )
         success("Configuration update complete!")
     except subprocess.CalledProcessError as e:
         error(f"Failed to update configuration: {str(e)}")
+        # Try to start the service again if it was stopped
+        info("Attempting to restart service in case of failure...")
+        subprocess.run(
+            ["docker", "compose", "-p", "lusochat-litellm", "start", "litellm"],
+            check=False
+        )
+    except Exception as e:
+        error(f"Failed to update configuration: {str(e)}")
+        # Try to start the service again if it was stopped
+        info("Attempting to restart service in case of failure...")
+        subprocess.run(
+            ["docker", "compose", "-p", "lusochat-litellm", "start", "litellm"],
+            check=False
+        )
 
 def main():
     """Main deployment function."""
