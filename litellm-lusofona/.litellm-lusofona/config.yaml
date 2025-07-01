@@ -1,6 +1,6 @@
 model_list:
   # DeepSeek Model Deployments
-  - model_name: Lusofona-On-Premise-Meta-Llama-3.1-8B-Instruct-Q4_K_M
+  - model_name: Llama-3.1-8B-Lusofona-On-Premise #Lusofona-On-Premise-Meta-Llama-3.1-8B-Instruct-Q4_K_M
     litellm_params:
       model: openai/Meta-Llama-3.1-8B-Instruct-Q4_K_M
       api_base: http://192.168.108.161:8080
@@ -10,7 +10,7 @@ model_list:
       model_alias: Meta-Llama-3.1-8B-Instruct-Q4_K_M
       host_node: 192.168.108.161
 
-  - model_name: Lusofona-On-Premise-Qwen3-32B-128K-Q4_K_S
+  - model_name: Qwen3-32B-Lusofona-On-Premise #Lusofona-On-Premise-Qwen3-32B-128K-Q4_K_S
     litellm_params:
       model: openai/Qwen3-32B-128K-Q4_K_S
       api_base: http://192.168.108.162:8080
@@ -41,19 +41,19 @@ model_list:
       model_alias: Groq-Llama-3.1-8B-Instant
       host_node: groq
 
-  - model_name: Groq-Mistral-8x7B-32768
+  - model_name: Groq-Mistral-Saba-24b
     litellm_params:
-      model: groq/mistral-8x7b-32768
+      model: groq/mistral-saba-24b
       api_base: https://api.groq.com/openai/v1
       api_key: os.environ/GROQ_API_KEY
       rpm: 100000
     model_info:
-      model_alias: Groq-Mistral-8x7B-32768
+      model_alias: Groq-Mistral-Saba-24b
       host_node: groq
 
   - model_name: Groq-DeepSeek-Llama-70B
     litellm_params:
-      model: groq/deepseek-llama-70b
+      model: groq/deepseek-r1-distill-llama-70b
       api_base: https://api.groq.com/openai/v1
       api_key: os.environ/GROQ_API_KEY
       rpm: 100000
