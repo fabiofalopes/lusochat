@@ -289,6 +289,24 @@ copy_custom_icons() {
         fi
     done
     
+    # CRITICAL FIX: Update SVG favicon with our custom icon
+    echo_info "Updating SVG favicon with custom icon (browsers prioritize SVG)..."
+    if [ -f "static/favicon.png" ]; then
+        # Convert PNG to base64 and embed in SVG
+        local base64_content=$(base64 "static/favicon.png" | tr -d '\n')
+        cat > "static/static/favicon.svg" << EOF
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="500" height="500" viewBox="0 0 500 500"><image width="500" height="500" xlink:href="data:image/png;base64,${base64_content}"></image><style>
+@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>
+EOF
+        echo_success "Updated SVG favicon with custom Lusochat icon (fixes browser tab icon)"
+        icons_copied=$((icons_copied + 1))
+    else
+        echo_warning "Could not update SVG favicon - static/favicon.png not found"
+        failed_copies=$((failed_copies + 1))
+    fi
+    
     echo_info "Icon copying complete: $icons_copied copied, $failed_copies failed"
     
     if [ $icons_copied -gt 0 ]; then
@@ -759,6 +777,152 @@ fi
 echo_info "====================================="
 echo_info ""
 
+# 3.5. Complete app.html metadata customization for browser tab and PWA
+echo_info "===== COMPLETE METADATA CUSTOMIZATION ====="
+if [ -f "src/app.html" ]; then
+    echo_info "Updating remaining Open WebUI references in app.html..."
+    
+    # Update apple-mobile-web-app-title
+    safe_replace_with_backup \
+        "src/app.html" \
+        '<meta name="apple-mobile-web-app-title" content="Open WebUI" />' \
+        '<meta name="apple-mobile-web-app-title" content="Lusochat" />' \
+        "Updated apple-mobile-web-app-title to Lusochat" || true
+    
+    # Update meta description
+    safe_replace_with_backup \
+        "src/app.html" \
+        '<meta name="description" content="Open WebUI" />' \
+        '<meta name="description" content="Lusochat - Lusófona University AI Chat Interface" />' \
+        "Updated meta description to Lusochat" || true
+    
+    # Update opensearch title
+    safe_replace_with_backup \
+        "src/app.html" \
+        'title="Open WebUI"' \
+        'title="Lusochat"' \
+        "Updated opensearch title to Lusochat" || true
+    
+    # Update page title (most important for browser tab)
+    safe_replace_with_backup \
+        "src/app.html" \
+        '<title>Open WebUI</title>' \
+        '<title>Lusochat</title>' \
+        "Updated page title to Lusochat (fixes browser tab title)" || true
+    
+    echo_success "App.html metadata customization complete!"
+else
+    echo_warning "src/app.html not found - skipping metadata updates"
+fi
+
+# Update manifest.json to ensure it's not empty and has correct app info
+echo_info "Updating manifest.json..."
+if [ -f "static/manifest.json" ]; then
+    # Check if manifest.json is empty or minimal
+    if [ ! -s "static/manifest.json" ] || [ "$(cat static/manifest.json | tr -d ' \n\t')" = "{}" ]; then
+        echo_info "Creating comprehensive manifest.json..."
+        cat > "static/manifest.json" << 'EOF'
+{
+  "name": "Lusochat",
+  "short_name": "Lusochat",
+  "description": "Lusófona University AI Chat Interface",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#171717",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/static/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/web-app-manifest-192x192.png", 
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/web-app-manifest-512x512.png",
+      "sizes": "512x512", 
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
+EOF
+        echo_success "Created comprehensive manifest.json with Lusochat branding"
+    else
+        echo_info "manifest.json already has content - updating names only"
+        safe_replace_with_backup \
+            "static/manifest.json" \
+            '"name": "Open WebUI"' \
+            '"name": "Lusochat"' \
+            "Updated manifest.json name" || true
+        safe_replace_with_backup \
+            "static/manifest.json" \
+            '"short_name": "WebUI"' \
+            '"short_name": "Lusochat"' \
+            "Updated manifest.json short_name" || true
+        safe_replace_with_backup \
+            "static/manifest.json" \
+            '"short_name": "Open WebUI"' \
+            '"short_name": "Lusochat"' \
+            "Updated manifest.json short_name (alternative pattern)" || true
+    fi
+else
+    echo_warning "static/manifest.json not found - creating new one"
+    mkdir -p static
+    cat > "static/manifest.json" << 'EOF'
+{
+  "name": "Lusochat",
+  "short_name": "Lusochat",
+  "description": "Lusófona University AI Chat Interface",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#171717",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/static/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/web-app-manifest-192x192.png", 
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/web-app-manifest-512x512.png",
+      "sizes": "512x512", 
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
+EOF
+    echo_success "Created new manifest.json with Lusochat branding"
+fi
+
+echo_info "================================================"
+echo_info ""
+
 # 4. Customize login form placeholders for all languages
 customize_login_placeholders
 
@@ -789,12 +953,20 @@ echo_info "=====================================================================
 echo_info "Lusochat customizations have been applied to Open WebUI!"
 echo_info ""
 echo_info "Changes applied:"
-echo_info "  - Updated APP_NAME in constants.ts"
-echo_info "  - Updated WEBUI_NAME logic in backend env.py"
-echo_info "  - Applied custom .env file (if available)"
-echo_info "  - Applied custom docker-compose.yaml (if available)"
-echo_info "  - Replaced custom icons (if available and structure verified)"
-echo_info "  - Updated login form placeholders for all languages"
+echo_info "  ✓ Updated APP_NAME in constants.ts"
+echo_info "  ✓ Updated WEBUI_NAME logic in backend env.py"
+echo_info "  ✓ Applied custom .env file (if available)"
+echo_info "  ✓ Applied custom docker-compose.yaml (if available)"
+echo_info "  ✓ Replaced custom icons (if available and structure verified)"
+echo_info "  ✓ Updated login form placeholders for all languages"
+echo_info "  ✓ Updated app.html metadata (browser tab, PWA, OpenSearch)"
+echo_info "  ✓ Updated manifest.json with comprehensive branding"
+echo_info ""
+echo_info "🎯 BROWSER TAB ISSUES SHOULD NOW BE FIXED:"
+echo_info "  • Browser tab title will show 'Lusochat' instead of 'Open WebUI'"
+echo_info "  • Custom favicon should appear in browser tab"
+echo_info "  • PWA installation will use Lusochat branding"
+echo_info "  • All metadata now references Lusófona University"
 echo_info ""
 
 # Ask if user wants to build and deploy
