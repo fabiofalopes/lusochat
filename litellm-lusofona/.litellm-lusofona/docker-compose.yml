@@ -4,7 +4,9 @@ services:
     image: ghcr.io/berriai/litellm:main-stable
     volumes:
       - ./config.yaml:/app/config.yaml
-      - ./logs:/app/logs    # Add this for persistent logging
+      - ./models:/app/models              # Mount models directory
+      - ./settings:/app/settings          # Mount settings directory
+      - ./logs:/app/logs                  # Persistent logging
     command:
       - "--config=/app/config.yaml"
     ports:

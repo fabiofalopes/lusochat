@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  lusochat-openwebui:
+    image: fabiolx/lusochat-openwebui:latest
+    container_name: lusochat-openwebui
+    ports:
+      - "${OPEN_WEBUI_PORT:-3000}:8080"
+    volumes:
+      - lusochat_data:/app/backend/data
+      - lusochat_docs:/app/backend/data/docs
+    environment:
+      - WEBUI_NAME=${WEBUI_NAME:-Lusochat}
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - OPENAI_API_BASE_URL=${OPENAI_API_BASE_URL:-https://api.openai.com/v1}
+      - ENABLE_SIGNUP=${ENABLE_SIGNUP:-false}
+      - ENABLE_LDAP=${ENABLE_LDAP:-false}
+      - LDAP_SERVER_HOST=${LDAP_SERVER_HOST}
+      - LDAP_SERVER_PORT=${LDAP_SERVER_PORT:-389}
+      - LDAP_ATTRIBUTE_FOR_USERNAME=${LDAP_ATTRIBUTE_FOR_USERNAME:-sAMAccountName}
+      - LDAP_APP_DN=${LDAP_APP_DN}
+      - LDAP_APP_PASSWORD=${LDAP_APP_PASSWORD}
+      - LDAP_SEARCH_BASE=${LDAP_SEARCH_BASE}
+      - LDAP_SEARCH_FILTERS=${LDAP_SEARCH_FILTERS}
+      - ENABLE_ADMIN_EXPORT=${ENABLE_ADMIN_EXPORT:-true}
+      - ENABLE_ADMIN_CHAT_ACCESS=${ENABLE_ADMIN_CHAT_ACCESS:-true}
+      - ENABLE_MODEL_FILTER=${ENABLE_MODEL_FILTER:-false}
+      - MODEL_FILTER_LIST=${MODEL_FILTER_LIST}
+      - ENABLE_IMAGE_GENERATION=${ENABLE_IMAGE_GENERATION:-true}
+      - ENABLE_RAG_WEB_SEARCH=${ENABLE_RAG_WEB_SEARCH:-true}
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - lusochat_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  lusochat_data:
+    driver: local
+  lusochat_docs:
+    driver: local
+
+networks:
+  lusochat_network:
+    driver: bridge

@@ -1,0 +1,18 @@
+# 🔄 Router Settings Configuration
+# Load balancing and routing configuration for the LiteLLM proxy
+# 
+# These settings control how requests are distributed across models
+# and how the system handles caching and persistence.
+
+router_settings:
+  # Load balancing strategy
+  routing_strategy: "least-busy"
+  
+  # Redis configuration for caching and state management
+  redis_host: redis
+  redis_port: 6379
+  redis_password: your_redis_password
+  
+  # Request handling
+  timeout: 30
+  num_retries: 2 

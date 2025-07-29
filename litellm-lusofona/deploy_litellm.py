@@ -116,6 +116,24 @@ def copy_custom_configs():
         else:
             warning(f"File not found: {file_name} (skipping)")
     
+    # Copy directory structures for modular configuration
+    directories_to_copy = ["models", "settings"]
+    
+    for dir_name in directories_to_copy:
+        source_dir = custom_dir / dir_name
+        dest_dir = litellm_dir / dir_name
+        
+        if source_dir.exists() and source_dir.is_dir():
+            # Remove destination directory if it exists
+            if dest_dir.exists():
+                shutil.rmtree(dest_dir)
+            # Copy the entire directory
+            shutil.copytree(source_dir, dest_dir)
+            success(f"Copied {dir_name}/ directory")
+            copied += 1
+        else:
+            warning(f"Directory not found: {dir_name}/ (skipping)")
+    
     # Also copy prometheus.yml from upstream repo to the same directory as docker-compose.yml
     prometheus_source = litellm_dir / "prometheus.yml" 
     prometheus_dest = litellm_dir / "prometheus.yml"  # It's already there from clone
@@ -125,7 +143,7 @@ def copy_custom_configs():
     else:
         warning("prometheus.yml not found in upstream repo")
     
-    info(f"Configuration copying complete: {copied} files copied")
+    info(f"Configuration copying complete: {copied} files/directories copied")
 
 def build_and_deploy():
     """Build Docker image and deploy services."""
@@ -199,12 +217,33 @@ def update_config():
         )
         success("Service stopped")
 
-        # Copy the config file to the litellm-upstream directory
-        info("Updating configuration file...")
+        # Copy the config file and modular directories to the litellm-upstream directory
+        info("Updating configuration files and directories...")
+        
+        # Copy main config file
         source_config = Path(CUSTOM_CONFIG_DIR) / "config.yaml"
         target_config = Path(LITELLM_DIR) / "config.yaml"
         shutil.copy2(source_config, target_config)
-        success("Configuration file updated")
+        success("Main configuration file updated")
+        
+        # Copy modular directories
+        custom_dir = Path(CUSTOM_CONFIG_DIR)
+        litellm_dir = Path(LITELLM_DIR)
+        
+        directories_to_copy = ["models", "settings"]
+        for dir_name in directories_to_copy:
+            source_dir = custom_dir / dir_name
+            dest_dir = litellm_dir / dir_name
+            
+            if source_dir.exists() and source_dir.is_dir():
+                # Remove destination directory if it exists
+                if dest_dir.exists():
+                    shutil.rmtree(dest_dir)
+                # Copy the entire directory
+                shutil.copytree(source_dir, dest_dir)
+                success(f"Updated {dir_name}/ directory")
+            else:
+                warning(f"Directory not found: {dir_name}/ (skipping)")
 
         # Start the litellm service again
         info("Starting LiteLLM service...")

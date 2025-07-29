@@ -1,0 +1,15 @@
+# ⚙️ LiteLLM Core Settings
+# Core configuration for LiteLLM proxy behavior
+# 
+# These settings control fundamental aspects of the LiteLLM proxy
+# including callbacks, retries, and request handling.
+
+litellm_settings:
+  # Monitoring and observability
+  callbacks: ["prometheus"]
+  service_callback: ["prometheus_system"]
+  
+  # Request handling
+  drop_params: True
+  num_retries: 3
+  request_timeout: 30 

@@ -1,0 +1,50 @@
+# 🏢 On-Premise Model Configurations
+# Lusófona Internal Infrastructure Models
+# 
+# These models run on internal Lusófona servers and provide
+# local AI capabilities without external dependencies.
+
+model_list:
+  # Internal Infrastructure Model - Gemma 3n E4B
+  - model_name: gemma-3n-E4B-Lusofona-On-Premise
+    litellm_params:
+      model: openai/gemma-3n-E4B-it-Q6_K
+      api_base: http://192.168.108.161:8080
+      api_key: none
+      rpm: 100000
+    model_info:
+      model_alias: gemma-3n-E4B-it-Q6_K
+      host_node: 192.168.108.161
+
+  # Internal Infrastructure Model - Mistral Small 3.2 24B
+  - model_name: Mistral-Small-3.2-24B-Lusofona-On-Premise
+    litellm_params:
+      model: openai/Mistral-Small-3.2-24B-Instruct-2506-Q4_K_M
+      api_base: http://192.168.108.162:8080
+      api_key: none
+      rpm: 100000
+    model_info:
+      model_alias: Mistral-Small-3.2-24B-Instruct-2506-Q4_K_M
+      host_node: 192.168.108.162
+
+  # Internal Infrastructure Model - Magistral Small 2506
+  - model_name: Magistral-Small-2506-Lusofona-On-Premise
+    litellm_params:
+      model: openai/Magistral-Small-2506-Q4_K_M
+      api_base: http://192.168.108.164:8080
+      api_key: none
+      rpm: 100000
+    model_info:
+      model_alias: Magistral-Small-2506-Q4_K_M
+      host_node: 192.168.108.164
+
+  # Internal Infrastructure Model - Qwen2.5 VL 7B (Vision Language)
+  - model_name: Qwen2.5-VL-7B-Lusofona-On-Premise
+    litellm_params:
+      model: ollama/qwen2.5vl:7b
+      api_base: http://192.168.108.166:11434
+      api_key: none
+      rpm: 100000
+    model_info:
+      model_alias: qwen2.5vl:7b
+      host_node: 192.168.108.166 

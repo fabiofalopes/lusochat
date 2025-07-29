@@ -1,0 +1,11 @@
+# 🌐 General Proxy Settings
+# General configuration settings for the LiteLLM proxy
+# 
+# These settings control user authentication headers and
+# other general proxy behavior.
+
+general_settings:
+  # User identification header
+  # This header is used to identify users in requests, typically
+  # set by the frontend application (like Open WebUI)
+  user_header_name: X-OpenWebUI-User-Id 

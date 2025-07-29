@@ -1,0 +1,135 @@
+# 🚀 SambaNova Model Configurations
+# SambaNova API Models - High-performance enterprise AI models
+# 
+# These models use the SambaNova API for advanced AI capabilities
+# with various context lengths and specialized functions.
+
+model_list:
+  # SambaNova - DeepSeek R1
+  - model_name: SambaNova-DeepSeek-R1
+    litellm_params:
+      model: sambanova/DeepSeek-R1
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      context_window: 32768  # 32k context length
+      max_tokens: 4096
+    model_info:
+      model_alias: DeepSeek-R1
+      host_node: sambanova
+
+  # SambaNova - DeepSeek V3 0324
+  - model_name: SambaNova-DeepSeek-V3-0324
+    litellm_params:
+      model: sambanova/DeepSeek-V3-0324
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      context_window: 32768  # 32k context length
+      max_tokens: 4096
+    model_info:
+      model_alias: DeepSeek-V3-0324
+      host_node: sambanova
+
+  # SambaNova - DeepSeek R1 Distill Llama 70B
+  - model_name: SambaNova-DeepSeek-R1-Distill-Llama-70B
+    litellm_params:
+      model: sambanova/DeepSeek-R1-Distill-Llama-70B
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      context_window: 131072  # 128k context length
+      max_tokens: 8192
+    model_info:
+      model_alias: DeepSeek-R1-Distill-Llama-70B
+      host_node: sambanova
+
+  # SambaNova - Meta Llama 3.3 70B Instruct
+  - model_name: SambaNova-Meta-Llama-3.3-70B-Instruct
+    litellm_params:
+      model: sambanova/Meta-Llama-3.3-70B-Instruct
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      context_window: 131072  # 128k context length
+      max_tokens: 8192
+    model_info:
+      model_alias: Meta-Llama-3.3-70B-Instruct
+      host_node: sambanova
+
+  # SambaNova - Meta Llama 3.1 8B Instruct
+  - model_name: SambaNova-Meta-Llama-3.1-8B-Instruct
+    litellm_params:
+      model: sambanova/Meta-Llama-3.1-8B-Instruct
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      context_window: 16384  # 16k context length
+      max_tokens: 4096
+    model_info:
+      model_alias: Meta-Llama-3.1-8B-Instruct
+      host_node: sambanova
+
+  # SambaNova - Llama 4 Maverick 17B 128E Instruct
+  - model_name: SambaNova-Llama-4-Maverick-17B-128E-Instruct
+    litellm_params:
+      model: sambanova/Llama-4-Maverick-17B-128E-Instruct
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      context_window: 131072  # 128k context length
+      max_tokens: 8192
+    model_info:
+      model_alias: Llama-4-Maverick-17B-128E-Instruct
+      host_node: sambanova
+
+  # SambaNova - Whisper Large v3 (Audio Model)
+  - model_name: SambaNova-Whisper-Large-v3
+    litellm_params:
+      model: sambanova/Whisper-Large-v3
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      # audio models only, no token limit
+    model_info:
+      model_alias: Whisper-Large-v3
+      host_node: sambanova
+
+  # SambaNova - Qwen3 32B
+  - model_name: SambaNova-Qwen3-32B
+    litellm_params:
+      model: sambanova/Qwen3-32B
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      context_window: 8192  # 8k context length
+      max_tokens: 2048
+    model_info:
+      model_alias: Qwen3-32B
+      host_node: sambanova
+
+  # SambaNova - Llama 3.3 Swallow 70B Instruct v0.4
+  - model_name: SambaNova-Llama-3.3-Swallow-70B-Instruct-v0.4
+    litellm_params:
+      model: sambanova/Llama-3.3-Swallow-70B-Instruct-v0.4
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      context_window: 16384  # 16k context length
+      max_tokens: 4096
+    model_info:
+      model_alias: Llama-3.3-Swallow-70B-Instruct-v0.4
+      host_node: sambanova
+
+  # SambaNova - E5 Mistral 7B Instruct
+  - model_name: SambaNova-E5-Mistral-7B-Instruct
+    litellm_params:
+      model: sambanova/E5-Mistral-7B-Instruct
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 100000
+      context_window: 4096  # 4k context length
+      max_tokens: 1024
+    model_info:
+      model_alias: E5-Mistral-7B-Instruct
+      host_node: sambanova 

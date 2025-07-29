@@ -1,0 +1,116 @@
+# ⚡ Groq Model Configurations
+# Groq API Models - Fast inference with excellent performance
+# 
+# These models use the Groq API for high-speed inference
+# across various model families and sizes.
+
+model_list:
+  # Groq - Llama 3.3 70B Versatile
+  - model_name: Groq-Llama-3.3-70B-Versatile
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 100000
+    model_info:
+      model_alias: Groq-Llama-3.3-70B-Versatile
+      host_node: groq
+
+  # Groq - Llama 3.1 8B Instant
+  - model_name: Groq-Llama-3.1-8B-Instant
+    litellm_params:
+      model: groq/llama-3.1-8b-instant
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 100000
+    model_info:
+      model_alias: Groq-Llama-3.1-8B-Instant
+      host_node: groq
+
+  # Groq - Mistral Saba 24B
+  - model_name: Groq-Mistral-Saba-24b
+    litellm_params:
+      model: groq/mistral-saba-24b
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 100000
+    model_info:
+      model_alias: Groq-Mistral-Saba-24b
+      host_node: groq
+
+  # Groq - DeepSeek Llama 70B
+  - model_name: Groq-DeepSeek-Llama-70B
+    litellm_params:
+      model: groq/deepseek-r1-distill-llama-70b
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 100000
+    model_info:
+      model_alias: Groq-DeepSeek-Llama-70B
+      host_node: groq
+
+  # Groq - Llama 4 Maverick 17B 128E Instruct
+  - model_name: Groq-Llama-4-Maverick-17B-128E-Instruct
+    litellm_params:
+      model: groq/meta-llama/llama-4-maverick-17b-128e-instruct
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 100000
+    model_info:
+      model_alias: Groq-Llama-4-Maverick-17B-128E-Instruct
+      host_node: groq
+
+  # Groq - Llama 4 Scout 17B 16E Instruct
+  - model_name: Groq-Llama-4-Scout-17B-16E-Instruct
+    litellm_params:
+      model: groq/meta-llama/llama-4-scout-17b-16e-instruct
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 100000
+    model_info:
+      model_alias: Groq-Llama-4-Scout-17B-16E-Instruct
+      host_node: groq
+
+  # Groq - Moonshot Kimi K2 Instruct
+  - model_name: Groq-Moonshot-Kimi-K2-Instruct
+    litellm_params:
+      model: groq/moonshotai/kimi-k2-instruct
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 100000
+    model_info:
+      model_alias: Groq-Moonshot-Kimi-K2-Instruct
+      host_node: groq
+
+  # Groq - Qwen3 32B
+  - model_name: Groq-Qwen3-32B
+    litellm_params:
+      model: groq/qwen/qwen3-32b
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 100000
+    model_info:
+      model_alias: Groq-Qwen3-32B
+      host_node: groq
+
+  # Groq - Compound Beta Agentic System
+  - model_name: Groq-Compound-Beta-Agentic-System
+    litellm_params:
+      model: groq/compound-beta
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 100000
+    model_info:
+      model_alias: Groq-Compound-Beta-Agentic-System
+      host_node: groq
+
+  # Groq - Compound Beta Mini Agentic System
+  - model_name: Groq-Compound-Beta-Mini-Agentic-System
+    litellm_params:
+      model: groq/compound-beta-mini
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 100000
+    model_info:
+      model_alias: Groq-Compound-Beta-Mini-Agentic-System
+      host_node: groq 
