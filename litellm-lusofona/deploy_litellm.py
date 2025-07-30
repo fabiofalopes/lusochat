@@ -66,19 +66,32 @@ def check_tool(tool):
 
 def cleanup_and_clone():
     """Handle existing directory and clone fresh LiteLLM."""
+    clone = False
     if Path(LITELLM_DIR).exists():
         warning(f"LiteLLM directory already exists: {LITELLM_DIR}")
         if prompt_user("Do you want to remove it and clone fresh?"):
             info("Removing existing LiteLLM directory...")
             shutil.rmtree(LITELLM_DIR)
             success("Cleanup complete.")
+            clone = True
         else:
             info("Using existing LiteLLM directory...")
-            return
+            clone = False
+    else:
+        clone = True
 
-    info("Cloning LiteLLM repository...")
-    run_command(["git", "clone", "--depth", "1", LITELLM_GIT_URL, LITELLM_DIR])
-    success("LiteLLM repository cloned successfully.")
+    if clone:
+        info("Cloning LiteLLM repository...")
+        run_command(["git", "clone", "--depth", "1", LITELLM_GIT_URL, LITELLM_DIR])
+        success("LiteLLM repository cloned successfully.")
+    else:
+        info("Pulling latest changes...")
+        run_command(["git", "pull"], cwd=LITELLM_DIR)
+        success("Pulled latest changes.")
+
+    info("Applying local enterprise unlock patch...")
+    run_command(["python3", "apply_local_unlock_patch.py"], cwd=CUSTOM_CONFIG_DIR)
+    success("Patch applied successfully.")
 
 def copy_custom_configs():
     """Copy our custom configurations to the LiteLLM directory."""
@@ -110,6 +123,16 @@ def copy_custom_configs():
         dest = litellm_dir / file_name
         
         if source.exists():
+            # Special handling for docker-compose.yml to preserve our custom services
+            if file_name == "docker-compose.yml" and dest.exists():
+                with open(source, 'r') as f:
+                    custom_content = f.read()
+                with open(dest, 'r') as f:
+                    existing_content = f.read()
+                
+                if "grafana:" not in existing_content and "grafana:" in custom_content:
+                    info(f"Replacing {file_name} to restore missing services (Grafana, Redis)")
+            
             shutil.copy2(source, dest)
             success(f"Copied {file_name}")
             copied += 1
