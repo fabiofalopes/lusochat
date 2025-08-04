@@ -64,15 +64,74 @@ def check_tool(tool):
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
+def get_host_ip():
+    """Get the primary IP address of the current host."""
+    try:
+        # Try to get the IP address using hostname -I (Linux/Unix)
+        result = subprocess.run(
+            ["hostname", "-I"], 
+            capture_output=True, 
+            text=True, 
+            check=True
+        )
+        # Get the first IP address
+        ip = result.stdout.strip().split()[0]
+        return ip
+    except (subprocess.CalledProcessError, IndexError):
+        try:
+            # Fallback: get IP by connecting to a remote address
+            import socket
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            ip = s.getsockname()[0]
+            s.close()
+            return ip
+        except Exception:
+            # Final fallback: localhost
+            return "localhost"
+
+def generate_docs_description():
+    """Generate the DOCS_DESCRIPTION with dynamic host URL."""
+    host_ip = get_host_ip()
+    port = os.environ.get("LITELLM_PORT", "4000")
+    
+    # Construct the dynamic URL
+    dynamic_url = f"http://{host_ip}:{port}"
+    
+    # Generate the description with proper formatting (multi-line)
+    description = f'''Proxy Server to call 100+ LLMs in the OpenAI format. [**Customize Swagger Docs**](https://docs.litellm.ai/docs/proxy/enterprise#swagger-docs---custom-routes--branding)
+
+👉 [`LiteLLM Admin Panel on /ui`]({dynamic_url}/ui). Create, Edit Keys with SSO
+
+💸 [`LiteLLM Model Cost Map`](https://models.litellm.ai/).'''
+    
+    return description
+
 def cleanup_and_clone():
     """Handle existing directory and clone fresh LiteLLM."""
+    # Stop and remove existing containers
+    info("Stopping existing containers...")
+    subprocess.run(["docker", "compose", "-p", "lusochat-litellm", "down"], 
+                    capture_output=True, check=False)
+    
     clone = False
     if Path(LITELLM_DIR).exists():
         warning(f"LiteLLM directory already exists: {LITELLM_DIR}")
         if prompt_user("Do you want to remove it and clone fresh?"):
             info("Removing existing LiteLLM directory...")
-            shutil.rmtree(LITELLM_DIR)
-            success("Cleanup complete.")
+            try:
+                shutil.rmtree(LITELLM_DIR)
+                success("Cleanup complete.")
+            except PermissionError as e:
+                warning(f"Permission error removing directory: {e}")
+                warning("Attempting to remove with sudo...")
+                try:
+                    subprocess.run(["sudo", "rm", "-rf", LITELLM_DIR], check=True)
+                    success("Cleanup complete (with sudo).")
+                except subprocess.CalledProcessError:
+                    error("Failed to remove directory even with sudo. Please remove manually:")
+                    error(f"  sudo rm -rf {LITELLM_DIR}")
+                    error("Then run the script again.")
             clone = True
         else:
             info("Using existing LiteLLM directory...")
@@ -114,12 +173,81 @@ def copy_custom_configs():
         else:
             warning(".env and env.example not found - deployment may fail")
     
+    # Handle dynamic DOCS_DESCRIPTION generation BEFORE copying files
+    env_file = custom_dir / ".env"
+    temp_env_file = None
+    
+    if env_file.exists():
+        try:
+            with open(env_file, 'r') as f:
+                env_content = f.read()
+            
+            # Check if LITELLM_LICENSE is set to LOCAL_ENTERPRISE_UNLOCK
+            if "LITELLM_LICENSE=LOCAL_ENTERPRISE_UNLOCK" in env_content or "LITELLM_LICENSE=\"LOCAL_ENTERPRISE_UNLOCK\"" in env_content:
+                info("LITELLM_LICENSE=LOCAL_ENTERPRISE_UNLOCK detected, checking DOCS_DESCRIPTION...")
+                
+                if "DOCS_DESCRIPTION=" in env_content:
+                    lines = env_content.split('\n')
+                    new_lines = []
+                    replaced = False
+                    for line in lines:
+                        if line.strip().startswith('DOCS_DESCRIPTION='):
+                            # Replace if empty or static
+                            if (
+                                line.strip() == "DOCS_DESCRIPTION=" or
+                                line.strip() == 'DOCS_DESCRIPTION=""' or
+                                line.strip() == 'DOCS_DESCRIPTION= ""' or
+                                line.strip() == 'DOCS_DESCRIPTION= ' or
+                                line.strip().startswith('DOCS_DESCRIPTION=') and len(line.strip()) == len('DOCS_DESCRIPTION=') or
+                                line.strip().startswith('DOCS_DESCRIPTION=') and line.strip().endswith('""') or  # Your exact case
+                                "Lusófona University" in line or
+                                "LiteLLM proxy server for Lusófona University" in line
+                            ):
+                                dynamic_description = generate_docs_description()
+                                new_lines.append(f'DOCS_DESCRIPTION="{dynamic_description}"')
+                                replaced = True
+                                info("Replaced DOCS_DESCRIPTION with dynamic one.")
+                            else:
+                                new_lines.append(line)
+                        else:
+                            new_lines.append(line)
+                    if replaced:
+                        # Create temporary file with modified content
+                        temp_env_file = custom_dir / ".env.temp"
+                        with open(temp_env_file, 'w') as f:
+                            f.write('\n'.join(new_lines))
+                        success("Created temporary .env file with dynamic description")
+                        info(f"Generated URL: http://{get_host_ip()}:{os.environ.get('LITELLM_PORT', '4000')}")
+                    else:
+                        info("DOCS_DESCRIPTION exists and appears to be custom, using original file")
+                else:
+                    # No DOCS_DESCRIPTION found, add it
+                    info("No DOCS_DESCRIPTION found, adding dynamic one...")
+                    dynamic_description = generate_docs_description()
+                    
+                    # Create temporary file with added content
+                    temp_env_file = custom_dir / ".env.temp"
+                    with open(temp_env_file, 'w') as f:
+                        f.write(env_content)
+                        f.write(f'\n# Auto-generated dynamic description\nDOCS_DESCRIPTION="{dynamic_description}"\n')
+                    
+                    success("Created temporary .env file with dynamic description")
+                    info(f"Generated URL: http://{get_host_ip()}:{os.environ.get('LITELLM_PORT', '4000')}")
+        except Exception as e:
+            warning(f"Could not process .env file for dynamic description: {e}")
+    
     # Files to copy from custom config
     config_files = ["config.yaml", "docker-compose.yml", ".env"]
     
     copied = 0
     for file_name in config_files:
-        source = custom_dir / file_name
+        # Use temporary .env file if it exists, otherwise use original
+        if file_name == ".env" and temp_env_file and temp_env_file.exists():
+            source = temp_env_file
+            info("Using temporary .env file with dynamic description")
+        else:
+            source = custom_dir / file_name
+        
         dest = litellm_dir / file_name
         
         if source.exists():
@@ -167,6 +295,14 @@ def copy_custom_configs():
         warning("prometheus.yml not found in upstream repo")
     
     info(f"Configuration copying complete: {copied} files/directories copied")
+    
+    # Clean up temporary file if it was created
+    if temp_env_file and temp_env_file.exists():
+        try:
+            temp_env_file.unlink()
+            info("Cleaned up temporary .env file")
+        except Exception as e:
+            warning(f"Could not clean up temporary file: {e}")
 
 def build_and_deploy():
     """Build Docker image and deploy services."""
@@ -205,6 +341,7 @@ def show_deployment_info():
     info("=" * 60)
     info("Services available:")
     info("  🤖 LiteLLM Proxy: http://localhost:4000")
+    info(f"  🌐 Network access: http://{get_host_ip()}:4000")
     info("  📊 Grafana: http://localhost:3001 (admin/admin)")
     info("  📈 Prometheus: http://localhost:9090")
     info("")
