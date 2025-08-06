@@ -5,6 +5,28 @@
 # across various model families and sizes.
 
 model_list:
+  # Groq - GPT OSS 20B (OpenAI)
+  - model_name: Groq-GPT-OSS-20B
+    litellm_params:
+      model: groq/openai/gpt-oss-20b
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 100000
+    model_info:
+      model_alias: Groq-GPT-OSS-20B
+      host_node: groq
+
+  # Groq - GPT OSS 120B (OpenAI)
+  - model_name: Groq-GPT-OSS-120B
+    litellm_params:
+      model: groq/openai/gpt-oss-120b
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 100000
+    model_info:
+      model_alias: Groq-GPT-OSS-120B
+      host_node: groq
+
   # Groq - Llama 3.3 70B Versatile
   - model_name: Groq-Llama-3.3-70B-Versatile
     litellm_params:
