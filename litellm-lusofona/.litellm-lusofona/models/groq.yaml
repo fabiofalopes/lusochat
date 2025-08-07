@@ -1,6 +1,11 @@
 # groq.yaml
 # ⚡ Groq Model Configurations
 # Information verified and updated based on official Groq documentation as of August 7, 2025.
+# 
+# This configuration includes:
+# - LLM Models (Language Models)
+# - STT Models (Speech-to-Text / Audio Transcription)
+# - TTS Models (Text-to-Speech)
 
 model_list:
   # Groq - Llama 3.1 8B Instant
@@ -238,7 +243,63 @@ model_list:
       pricing_tier: "beta"
       supports_tools: true
 
-# The rest of your configuration (litellm_settings, router_settings, etc.) would follow here.
+  # ============================================================================
+  # SPEECH-TO-TEXT (STT) / AUDIO TRANSCRIPTION MODELS
+  # ============================================================================
+
+  # Groq - Whisper Large V3 (Production)
+  - model_name: Groq-Whisper-Large-V3
+    litellm_params:
+      model: groq/whisper-large-v3
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 30
+      tpm: 10000
+      max_file_size_mb: 100  # Maximum file size for audio transcription
+    model_info:
+      model_alias: Groq-Whisper-Large-V3
+      host_node: groq
+      mode: audio_transcription
+      max_file_size_mb: 100
+      pricing_tier: "production"
+
+  # Groq - Whisper Large V3 Turbo (Production)
+  - model_name: Groq-Whisper-Large-V3-Turbo
+    litellm_params:
+      model: groq/whisper-large-v3-turbo
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 30
+      tpm: 10000
+      max_file_size_mb: 100  # Maximum file size for audio transcription
+    model_info:
+      model_alias: Groq-Whisper-Large-V3-Turbo
+      host_node: groq
+      mode: audio_transcription
+      max_file_size_mb: 100
+      pricing_tier: "production"
+
+  # ============================================================================
+  # TEXT-TO-SPEECH (TTS) MODELS
+  # ============================================================================
+
+  # Groq - PlayAI TTS (Preview)
+  - model_name: Groq-PlayAI-TTS
+    litellm_params:
+      model: groq/playai-tts
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 30
+      tpm: 5000
+    model_info:
+      model_alias: Groq-PlayAI-TTS
+      host_node: groq
+      mode: text_to_speech
+      context_window: 8192
+      max_output_tokens: 8192
+      pricing_tier: "preview"
+
+# The rest of your configuration (litellm_settings, router_settings, etc.) follow here.
 
 # Global settings for LiteLLM proxy
 litellm_settings:
@@ -261,6 +322,10 @@ litellm_settings:
   
   # Enable caching for better performance
   redis_url: os.environ/REDIS_URL # Optional Redis for caching
+  
+  # Audio model settings
+  max_file_size_mb: 100           # Global max file size for audio models
+  supported_audio_formats: ["mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"]
 
 # Router settings for load balancing
 router_settings:
