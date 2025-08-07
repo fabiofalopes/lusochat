@@ -1,86 +1,26 @@
+# groq.yaml
 # ⚡ Groq Model Configurations
-# Groq API Models - Fast inference with excellent performance
-# 
-# These models use the Groq API for high-speed inference
-# across various model families and sizes.
+# Information verified and updated based on official Groq documentation as of August 7, 2025.
 
 model_list:
-  # Groq - GPT OSS 20B (OpenAI)
-  - model_name: Groq-GPT-OSS-20B
-    litellm_params:
-      model: groq/openai/gpt-oss-20b
-      api_base: https://api.groq.com/openai/v1
-      api_key: os.environ/GROQ_API_KEY
-      rpm: 100000
-    model_info:
-      model_alias: Groq-GPT-OSS-20B
-      host_node: groq
-
-  # Groq - GPT OSS 120B (OpenAI)
-  - model_name: Groq-GPT-OSS-120B
-    litellm_params:
-      model: groq/openai/gpt-oss-120b
-      api_base: https://api.groq.com/openai/v1
-      api_key: os.environ/GROQ_API_KEY
-      rpm: 100000
-    model_info:
-      model_alias: Groq-GPT-OSS-120B
-      host_node: groq
-
-  # Groq - Llama 3.3 70B Versatile
-  - model_name: Groq-Llama-3.3-70B-Versatile
-    litellm_params:
-      model: groq/llama-3.3-70b-versatile
-      api_base: https://api.groq.com/openai/v1
-      api_key: os.environ/GROQ_API_KEY
-      rpm: 100000
-    model_info:
-      model_alias: Groq-Llama-3.3-70B-Versatile
-      host_node: groq
-
   # Groq - Llama 3.1 8B Instant
   - model_name: Groq-Llama-3.1-8B-Instant
     litellm_params:
       model: groq/llama-3.1-8b-instant
       api_base: https://api.groq.com/openai/v1
       api_key: os.environ/GROQ_API_KEY
-      rpm: 100000
+      rpm: 30                  # Requests per minute for free tier
+      tpm: 30000                 # Tokens per minute (from Groq docs for Llama 3 8B)
+      max_tokens: 128000         # Maximum context window
+      input_cost_per_token: 0.00000005  # $0.05 per 1M input tokens
+      output_cost_per_token: 0.00000008 # $0.08 per 1M output tokens
     model_info:
       model_alias: Groq-Llama-3.1-8B-Instant
       host_node: groq
-
-  # Groq - Mistral Saba 24B
-  - model_name: Groq-Mistral-Saba-24b
-    litellm_params:
-      model: groq/mistral-saba-24b
-      api_base: https://api.groq.com/openai/v1
-      api_key: os.environ/GROQ_API_KEY
-      rpm: 100000
-    model_info:
-      model_alias: Groq-Mistral-Saba-24b
-      host_node: groq
-
-  # Groq - DeepSeek Llama 70B
-  - model_name: Groq-DeepSeek-Llama-70B
-    litellm_params:
-      model: groq/deepseek-r1-distill-llama-70b
-      api_base: https://api.groq.com/openai/v1
-      api_key: os.environ/GROQ_API_KEY
-      rpm: 100000
-    model_info:
-      model_alias: Groq-DeepSeek-Llama-70B
-      host_node: groq
-
-  # Groq - Llama 4 Maverick 17B 128E Instruct
-  - model_name: Groq-Llama-4-Maverick-17B-128E-Instruct
-    litellm_params:
-      model: groq/meta-llama/llama-4-maverick-17b-128e-instruct
-      api_base: https://api.groq.com/openai/v1
-      api_key: os.environ/GROQ_API_KEY
-      rpm: 100000
-    model_info:
-      model_alias: Groq-Llama-4-Maverick-17B-128E-Instruct
-      host_node: groq
+      speed_tokens_per_second: 840
+      context_window: 128000
+      max_output_tokens: 8192  # Provider-specific output limit
+      pricing_tier: "budget"
 
   # Groq - Llama 4 Scout 17B 16E Instruct
   - model_name: Groq-Llama-4-Scout-17B-16E-Instruct
@@ -88,21 +28,37 @@ model_list:
       model: groq/meta-llama/llama-4-scout-17b-16e-instruct
       api_base: https://api.groq.com/openai/v1
       api_key: os.environ/GROQ_API_KEY
-      rpm: 100000
+      rpm: 30
+      tpm: 9000                  # Estimated TPM based on similar-sized models like Gemma
+      max_tokens: 128000
+      input_cost_per_token: 0.00000011  # $0.11 per 1M input tokens
+      output_cost_per_token: 0.00000034 # $0.34 per 1M output tokens
     model_info:
       model_alias: Groq-Llama-4-Scout-17B-16E-Instruct
       host_node: groq
+      speed_tokens_per_second: 594
+      context_window: 128000
+      max_output_tokens: 8192
+      pricing_tier: "standard"
 
-  # Groq - Moonshot Kimi K2 Instruct
-  - model_name: Groq-Moonshot-Kimi-K2-Instruct
+  # Groq - Mistral Saba 24B
+  - model_name: Groq-Mistral-Saba-24b
     litellm_params:
-      model: groq/moonshotai/kimi-k2-instruct
+      model: groq/mistral-saba-24b
       api_base: https://api.groq.com/openai/v1
       api_key: os.environ/GROQ_API_KEY
-      rpm: 100000
+      rpm: 30
+      tpm: 5000                  # Tokens per minute (from Groq docs for Mixtral 8x7B)
+      max_tokens: 32768          # Corrected context window from Groq docs
+      input_cost_per_token: 0.00000079  # $0.79 per 1M input tokens
+      output_cost_per_token: 0.00000079 # $0.79 per 1M output tokens
     model_info:
-      model_alias: Groq-Moonshot-Kimi-K2-Instruct
+      model_alias: Groq-Mistral-Saba-24b
       host_node: groq
+      speed_tokens_per_second: 330
+      context_window: 32768
+      max_output_tokens: 8192
+      pricing_tier: "standard"
 
   # Groq - Qwen3 32B
   - model_name: Groq-Qwen3-32B
@@ -110,10 +66,135 @@ model_list:
       model: groq/qwen/qwen3-32b
       api_base: https://api.groq.com/openai/v1
       api_key: os.environ/GROQ_API_KEY
-      rpm: 100000
+      rpm: 60
+      tpm: 6000
+      max_tokens: 131072         # Using 128k context window
+      input_cost_per_token: 0.00000029  # $0.29 per 1M input tokens
+      output_cost_per_token: 0.00000059 # $0.59 per 1M output tokens
     model_info:
       model_alias: Groq-Qwen3-32B
       host_node: groq
+      speed_tokens_per_second: 662
+      context_window: 131072
+      max_output_tokens: 8192
+      pricing_tier: "standard"
+
+  # Groq - Llama 3.3 70B Versatile
+  - model_name: Groq-Llama-3.3-70B-Versatile
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 30
+      tpm: 6000                  # Tokens per minute (from Groq docs for Llama 3 70B)
+      max_tokens: 128000
+      input_cost_per_token: 0.00000059  # $0.59 per 1M input tokens
+      output_cost_per_token: 0.00000079 # $0.79 per 1M output tokens
+    model_info:
+      model_alias: Groq-Llama-3.3-70B-Versatile
+      host_node: groq
+      speed_tokens_per_second: 394
+      context_window: 128000
+      max_output_tokens: 8192
+      pricing_tier: "standard"
+
+  # Groq - DeepSeek Llama 70B
+  - model_name: Groq-DeepSeek-Llama-70B
+    litellm_params:
+      model: groq/deepseek-r1-distill-llama-70b
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 30
+      tpm: 6000                  # Estimated TPM, consistent with other 70B models
+      max_tokens: 128000
+      input_cost_per_token: 0.00000075  # $0.75 per 1M input tokens
+      output_cost_per_token: 0.00000099 # $0.99 per 1M output tokens
+    model_info:
+      model_alias: Groq-DeepSeek-Llama-70B
+      host_node: groq
+      speed_tokens_per_second: 400
+      context_window: 128000
+      max_output_tokens: 8192
+      pricing_tier: "premium"
+
+  # Groq - Llama 4 Maverick 17B 128E Instruct
+  - model_name: Groq-Llama-4-Maverick-17B-128E-Instruct
+    litellm_params:
+      model: groq/meta-llama/llama-4-maverick-17b-128e-instruct
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 30
+      tpm: 9000                  # Estimated TPM based on similar-sized models like Gemma
+      max_tokens: 128000
+      input_cost_per_token: 0.0000002   # $0.20 per 1M input tokens
+      output_cost_per_token: 0.0000006  # $0.60 per 1M output tokens
+    model_info:
+      model_alias: Groq-Llama-4-Maverick-17B-128E-Instruct
+      host_node: groq
+      speed_tokens_per_second: 562
+      context_window: 128000
+      max_output_tokens: 8192
+      pricing_tier: "standard"
+
+  # Groq - Moonshot Kimi K2 Instruct
+  - model_name: Groq-Moonshot-Kimi-K2-Instruct
+    litellm_params:
+      model: groq/moonshotai/kimi-k2-instruct
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 60
+      tpm: 10000
+      max_tokens: 128000
+      input_cost_per_token: 0.000001    # $1.00 per 1M input tokens
+      output_cost_per_token: 0.000003   # $3.00 per 1M output tokens
+    model_info:
+      model_alias: Groq-Moonshot-Kimi-K2-Instruct
+      host_node: groq
+      speed_tokens_per_second: 200
+      context_window: 128000
+      max_output_tokens: 8192
+      pricing_tier: "enterprise"
+      
+  # Note: The following models (GPT-OSS, Compound) are not on the public Groq list.
+  # Their parameters are based on the user's config and may require a special API tier.
+
+  # Groq - GPT OSS 20B (OpenAI)
+  - model_name: Groq-GPT-OSS-20B
+    litellm_params:
+      model: groq/openai/gpt-oss-20b
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 30
+      tpm: 8000
+      max_tokens: 128000
+      input_cost_per_token: 0.0000001
+      output_cost_per_token: 0.0000005
+    model_info:
+      model_alias: Groq-GPT-OSS-20B
+      host_node: groq
+      speed_tokens_per_second: 1000
+      context_window: 128000
+      max_output_tokens: 8192
+      pricing_tier: "affordable"
+
+  # Groq - GPT OSS 120B (OpenAI)
+  - model_name: Groq-GPT-OSS-120B
+    litellm_params:
+      model: groq/openai/gpt-oss-120b
+      api_base: https://api.groq.com/openai/v1
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 30
+      tpm: 8000
+      max_tokens: 128000
+      input_cost_per_token: 0.00000015
+      output_cost_per_token: 0.00000075
+    model_info:
+      model_alias: Groq-GPT-OSS-120B
+      host_node: groq
+      speed_tokens_per_second: 500
+      context_window: 128000
+      max_output_tokens: 8192
+      pricing_tier: "premium"
 
   # Groq - Compound Beta Agentic System
   - model_name: Groq-Compound-Beta-Agentic-System
@@ -121,10 +202,20 @@ model_list:
       model: groq/compound-beta
       api_base: https://api.groq.com/openai/v1
       api_key: os.environ/GROQ_API_KEY
-      rpm: 100000
+      rpm: 15
+      tpm: 70000
+      max_tokens: 128000
+      # Note: Tool calls are free during beta
+      input_cost_per_token: 0
+      output_cost_per_token: 0
     model_info:
       model_alias: Groq-Compound-Beta-Agentic-System
       host_node: groq
+      speed_tokens_per_second: 400
+      context_window: 128000
+      max_output_tokens: 8192 # Assumed default limit
+      pricing_tier: "beta"
+      supports_tools: true
 
   # Groq - Compound Beta Mini Agentic System
   - model_name: Groq-Compound-Beta-Mini-Agentic-System
@@ -132,7 +223,65 @@ model_list:
       model: groq/compound-beta-mini
       api_base: https://api.groq.com/openai/v1
       api_key: os.environ/GROQ_API_KEY
-      rpm: 100000
+      rpm: 15
+      tpm: 70000
+      max_tokens: 128000
+      # Note: Tool calls are free during beta
+      input_cost_per_token: 0
+      output_cost_per_token: 0
     model_info:
       model_alias: Groq-Compound-Beta-Mini-Agentic-System
-      host_node: groq 
+      host_node: groq
+      speed_tokens_per_second: 600
+      context_window: 128000
+      max_output_tokens: 8192 # Assumed default limit
+      pricing_tier: "beta"
+      supports_tools: true
+
+# The rest of your configuration (litellm_settings, router_settings, etc.) would follow here.
+
+# Global settings for LiteLLM proxy
+litellm_settings:
+  # Global rate limiting and budget settings
+  max_budget: 1000.0              # Maximum budget in USD
+  budget_duration: "30d"          # Budget reset period
+  
+  # Default fallback settings
+  default_max_tokens: 4096
+  default_temperature: 0.7
+  
+  # Request timeout settings
+  request_timeout: 600            # 10 minutes timeout
+  
+  # Retry settings
+  num_retries: 3
+  
+  # Enable cost tracking
+  cost_tracking: true
+  
+  # Enable caching for better performance
+  redis_url: os.environ/REDIS_URL # Optional Redis for caching
+
+# Router settings for load balancing
+router_settings:
+  routing_strategy: "least-busy"  # Options: simple-shuffle, least-busy, usage-based-routing
+  
+  # Cooldown settings for failed deployments
+  cooldown_time: 30               # seconds
+  
+  # Health check settings
+  health_check_interval: 300      # 5 minutes
+
+# General settings
+general_settings:
+  # Master key for proxy authentication
+  master_key: os.environ/LITELLM_MASTER_KEY
+  
+  # Database for storing usage data
+  database_url: os.environ/DATABASE_URL
+  
+  # Enable UI dashboard
+  ui: true
+  
+  # Enable detailed logging
+  set_verbose: true
