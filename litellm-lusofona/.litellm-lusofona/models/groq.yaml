@@ -257,11 +257,10 @@ model_list:
       tpm: 10000
       max_file_size_mb: 100  # Maximum file size for audio transcription
     model_info:
-      model_alias: Groq-Whisper-Large-V3
       host_node: groq
-      mode: audio_transcription
       max_file_size_mb: 100
-      pricing_tier: "production"
+      mode: audio_transcription
+      # pricing_tier: "production"
 
   # Groq - Whisper Large V3 Turbo (Production)
   - model_name: Groq-Whisper-Large-V3-Turbo
@@ -273,11 +272,10 @@ model_list:
       tpm: 10000
       max_file_size_mb: 100  # Maximum file size for audio transcription
     model_info:
-      model_alias: Groq-Whisper-Large-V3-Turbo
       host_node: groq
-      mode: audio_transcription
       max_file_size_mb: 100
-      pricing_tier: "production"
+      mode: audio_transcription
+      # pricing_tier: "production"
 
   # ============================================================================
   # TEXT-TO-SPEECH (TTS) MODELS

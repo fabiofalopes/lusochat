@@ -1,0 +1,11 @@
+Olá {user_email},
+
+A sua conta na plataforma modelos.ai.ulusofona.pt foi criada.
+
+**Credenciais:**
+- Chave: {key}
+- Link: {invitation_link}
+- Equipa: {teams}
+
+Para questões, responda a este email.
+

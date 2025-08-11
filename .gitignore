@@ -18,3 +18,13 @@ Thumbs.db
 *.swo 
 
 __pycache__/
+
+# OAuth and credentials
+credentials/
+
+# Logs
+logs/
+
+*.pyc
+
+files/
