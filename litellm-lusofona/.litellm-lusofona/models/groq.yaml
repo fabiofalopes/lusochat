@@ -16,16 +16,16 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 30                  # Requests per minute for free tier
       tpm: 30000                 # Tokens per minute (from Groq docs for Llama 3 8B)
-      max_tokens: 128000         # Maximum context window
+      # max_tokens: 128000         # Maximum context window
       input_cost_per_token: 0.00000005  # $0.05 per 1M input tokens
       output_cost_per_token: 0.00000008 # $0.08 per 1M output tokens
     model_info:
       model_alias: Groq-Llama-3.1-8B-Instant
       host_node: groq
-      speed_tokens_per_second: 840
+      # speed_tokens_per_second: 840
       context_window: 128000
-      max_output_tokens: 8192  # Provider-specific output limit
-      pricing_tier: "budget"
+      # max_output_tokens: 8192  # Provider-specific output limit
+      # pricing_tier: "budget"
 
   # Groq - Llama 4 Scout 17B 16E Instruct
   - model_name: Groq-Llama-4-Scout-17B-16E-Instruct
@@ -35,16 +35,16 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 30
       tpm: 9000                  # Estimated TPM based on similar-sized models like Gemma
-      max_tokens: 128000
+      # max_tokens: 128000
       input_cost_per_token: 0.00000011  # $0.11 per 1M input tokens
       output_cost_per_token: 0.00000034 # $0.34 per 1M output tokens
     model_info:
       model_alias: Groq-Llama-4-Scout-17B-16E-Instruct
       host_node: groq
-      speed_tokens_per_second: 594
+      # speed_tokens_per_second: 594
       context_window: 128000
-      max_output_tokens: 8192
-      pricing_tier: "standard"
+      # max_output_tokens: 8192
+      # pricing_tier: "standard"
 
   # Groq - Mistral Saba 24B
   - model_name: Groq-Mistral-Saba-24b
@@ -54,16 +54,16 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 30
       tpm: 5000                  # Tokens per minute (from Groq docs for Mixtral 8x7B)
-      max_tokens: 32768          # Corrected context window from Groq docs
+      # max_tokens: 32768          # Corrected context window from Groq docs
       input_cost_per_token: 0.00000079  # $0.79 per 1M input tokens
       output_cost_per_token: 0.00000079 # $0.79 per 1M output tokens
     model_info:
       model_alias: Groq-Mistral-Saba-24b
       host_node: groq
-      speed_tokens_per_second: 330
+      # speed_tokens_per_second: 330
       context_window: 32768
-      max_output_tokens: 8192
-      pricing_tier: "standard"
+      # max_output_tokens: 8192
+      # pricing_tier: "standard"
 
   # Groq - Qwen3 32B
   - model_name: Groq-Qwen3-32B
@@ -73,16 +73,16 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 60
       tpm: 6000
-      max_tokens: 131072         # Using 128k context window
+      # max_tokens: 131072         # Using 128k context window
       input_cost_per_token: 0.00000029  # $0.29 per 1M input tokens
       output_cost_per_token: 0.00000059 # $0.59 per 1M output tokens
     model_info:
       model_alias: Groq-Qwen3-32B
       host_node: groq
-      speed_tokens_per_second: 662
+      # speed_tokens_per_second: 662
       context_window: 131072
-      max_output_tokens: 8192
-      pricing_tier: "standard"
+      # max_output_tokens: 8192
+      # pricing_tier: "standard"
 
   # Groq - Llama 3.3 70B Versatile
   - model_name: Groq-Llama-3.3-70B-Versatile
@@ -92,16 +92,16 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 30
       tpm: 6000                  # Tokens per minute (from Groq docs for Llama 3 70B)
-      max_tokens: 128000
+      # max_tokens: 128000
       input_cost_per_token: 0.00000059  # $0.59 per 1M input tokens
       output_cost_per_token: 0.00000079 # $0.79 per 1M output tokens
     model_info:
       model_alias: Groq-Llama-3.3-70B-Versatile
       host_node: groq
-      speed_tokens_per_second: 394
+      # speed_tokens_per_second: 394
       context_window: 128000
-      max_output_tokens: 8192
-      pricing_tier: "standard"
+      # max_output_tokens: 8192
+      # pricing_tier: "standard"
 
   # Groq - DeepSeek Llama 70B
   - model_name: Groq-DeepSeek-Llama-70B
@@ -111,16 +111,16 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 30
       tpm: 6000                  # Estimated TPM, consistent with other 70B models
-      max_tokens: 128000
+      # max_tokens: 128000
       input_cost_per_token: 0.00000075  # $0.75 per 1M input tokens
       output_cost_per_token: 0.00000099 # $0.99 per 1M output tokens
     model_info:
       model_alias: Groq-DeepSeek-Llama-70B
       host_node: groq
-      speed_tokens_per_second: 400
+      # speed_tokens_per_second: 400
       context_window: 128000
-      max_output_tokens: 8192
-      pricing_tier: "premium"
+      # max_output_tokens: 8192
+      # pricing_tier: "premium"
 
   # Groq - Llama 4 Maverick 17B 128E Instruct
   - model_name: Groq-Llama-4-Maverick-17B-128E-Instruct
@@ -130,16 +130,16 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 30
       tpm: 9000                  # Estimated TPM based on similar-sized models like Gemma
-      max_tokens: 128000
+      # max_tokens: 128000
       input_cost_per_token: 0.0000002   # $0.20 per 1M input tokens
       output_cost_per_token: 0.0000006  # $0.60 per 1M output tokens
     model_info:
       model_alias: Groq-Llama-4-Maverick-17B-128E-Instruct
       host_node: groq
-      speed_tokens_per_second: 562
+      # speed_tokens_per_second: 562
       context_window: 128000
-      max_output_tokens: 8192
-      pricing_tier: "standard"
+      # max_output_tokens: 8192
+      # pricing_tier: "standard"
 
   # Groq - Moonshot Kimi K2 Instruct
   - model_name: Groq-Moonshot-Kimi-K2-Instruct
@@ -149,16 +149,16 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 60
       tpm: 10000
-      max_tokens: 128000
+      # max_tokens: 128000
       input_cost_per_token: 0.000001    # $1.00 per 1M input tokens
       output_cost_per_token: 0.000003   # $3.00 per 1M output tokens
     model_info:
       model_alias: Groq-Moonshot-Kimi-K2-Instruct
       host_node: groq
-      speed_tokens_per_second: 200
+      # speed_tokens_per_second: 200
       context_window: 128000
-      max_output_tokens: 8192
-      pricing_tier: "enterprise"
+      # max_output_tokens: 8192
+      # pricing_tier: "enterprise"
       
   # Note: The following models (GPT-OSS, Compound) are not on the public Groq list.
   # Their parameters are based on the user's config and may require a special API tier.
@@ -171,16 +171,16 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 30
       tpm: 8000
-      max_tokens: 128000
+      # max_tokens: 128000
       input_cost_per_token: 0.0000001
       output_cost_per_token: 0.0000005
     model_info:
       model_alias: Groq-GPT-OSS-20B
       host_node: groq
-      speed_tokens_per_second: 1000
+      # speed_tokens_per_second: 1000
       context_window: 128000
-      max_output_tokens: 8192
-      pricing_tier: "affordable"
+      # max_output_tokens: 8192
+      # pricing_tier: "affordable"
 
   # Groq - GPT OSS 120B (OpenAI)
   - model_name: Groq-GPT-OSS-120B
@@ -190,16 +190,16 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 30
       tpm: 8000
-      max_tokens: 128000
+      # max_tokens: 128000
       input_cost_per_token: 0.00000015
       output_cost_per_token: 0.00000075
     model_info:
       model_alias: Groq-GPT-OSS-120B
       host_node: groq
-      speed_tokens_per_second: 500
+      # speed_tokens_per_second: 500
       context_window: 128000
-      max_output_tokens: 8192
-      pricing_tier: "premium"
+      # max_output_tokens: 8192
+      # pricing_tier: "premium"
 
   # Groq - Compound Beta Agentic System
   - model_name: Groq-Compound-Beta-Agentic-System
@@ -209,17 +209,17 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 15
       tpm: 70000
-      max_tokens: 128000
+      # max_tokens: 128000
       # Note: Tool calls are free during beta
       input_cost_per_token: 0
       output_cost_per_token: 0
     model_info:
       model_alias: Groq-Compound-Beta-Agentic-System
       host_node: groq
-      speed_tokens_per_second: 400
+      # speed_tokens_per_second: 400
       context_window: 128000
-      max_output_tokens: 8192 # Assumed default limit
-      pricing_tier: "beta"
+      # max_output_tokens: 8192 # Assumed default limit
+      # pricing_tier: "beta"
       supports_tools: true
 
   # Groq - Compound Beta Mini Agentic System
@@ -230,17 +230,17 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 15
       tpm: 70000
-      max_tokens: 128000
+      # max_tokens: 128000
       # Note: Tool calls are free during beta
       input_cost_per_token: 0
       output_cost_per_token: 0
     model_info:
       model_alias: Groq-Compound-Beta-Mini-Agentic-System
       host_node: groq
-      speed_tokens_per_second: 600
+      # speed_tokens_per_second: 600
       context_window: 128000
-      max_output_tokens: 8192 # Assumed default limit
-      pricing_tier: "beta"
+      # max_output_tokens: 8192 # Assumed default limit
+      # pricing_tier: "beta"
       supports_tools: true
 
   # ============================================================================
@@ -260,7 +260,7 @@ model_list:
       host_node: groq
       max_file_size_mb: 100
       mode: audio_transcription
-      # pricing_tier: "production"
+      # # pricing_tier: "production"
 
   # Groq - Whisper Large V3 Turbo (Production)
   - model_name: Groq-Whisper-Large-V3-Turbo
@@ -275,7 +275,7 @@ model_list:
       host_node: groq
       max_file_size_mb: 100
       mode: audio_transcription
-      # pricing_tier: "production"
+      # # pricing_tier: "production"
 
   # ============================================================================
   # TEXT-TO-SPEECH (TTS) MODELS
@@ -294,8 +294,8 @@ model_list:
       host_node: groq
       mode: text_to_speech
       context_window: 8192
-      max_output_tokens: 8192
-      pricing_tier: "preview"
+      # max_output_tokens: 8192
+      # pricing_tier: "preview"
 
 # The rest of your configuration (litellm_settings, router_settings, etc.) follow here.
 
@@ -306,7 +306,7 @@ litellm_settings:
   budget_duration: "30d"          # Budget reset period
   
   # Default fallback settings
-  default_max_tokens: 4096
+  default_# max_tokens: 4096
   default_temperature: 0.7
   
   # Request timeout settings
