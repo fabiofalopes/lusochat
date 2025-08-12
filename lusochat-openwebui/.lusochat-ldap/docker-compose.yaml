@@ -21,6 +21,19 @@ services:
     restart: unless-stopped
     networks:
       - lusochat-litellm_litellm-network
+    depends_on:
+      - searxng
+
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./searxng:/etc/searxng
+    restart: unless-stopped
+    networks:
+      - lusochat-litellm_litellm-network
 
 volumes:
   open-webui: {}
