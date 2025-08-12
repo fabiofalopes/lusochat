@@ -2,6 +2,8 @@ Olá {user_email},
 
 A sua conta na plataforma modelos.ai.ulusofona.pt foi criada.
 
+**Use exatamente este email:** {user_email} (sem aliases)
+
 **Credenciais:**
 - Chave: {key}
 - Link: {invitation_link}
