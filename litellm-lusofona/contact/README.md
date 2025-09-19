@@ -37,7 +37,7 @@ Edit `src/.env` to configure:
 # Required
 CSV_PATH=../files/your_users.csv
 RESULTS_CSV_PATH=../files/your_results.csv  
-SUBJECT=Welcome to {teams} team
+SUBJECT=Your access to modelos.ai.ulusofona.pt
 BODY_FILE=../templates/welcome.txt
 SENDER=your-email@domain.com
 

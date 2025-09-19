@@ -6,16 +6,104 @@
 
 model_list:
 
-  # Internal Infrastructure Model - Gemma 2 9B IT (pop06)
-  - model_name: gemma-2-9b-it-Lusofona-On-Premise
+  # On-Premise Embedding Models via Ollama (pop06)
+  # Note: Assuming default Ollama port 11434 on 192.168.80.6. Adjust if different.
+  - model_name: embeddings-bge-m3-Lusofona-On-Premise
     litellm_params:
-      model: openai/gemma-2-9b-it-Q4_K_L
-      api_base: http://192.168.80.6:8080
+      model: ollama/bge-m3
+      api_base: http://192.168.80.6:11434
       api_key: none
-      rpm: 100000
+      rpm: 120
     model_info:
-      model_alias: gemma-2-9b-it-Q4_K_L
+      model_alias: bge-m3
       host_node: 192.168.80.6
+      provider: on-premise
+      mode: embedding
+
+  - model_name: embeddings-nomic-embed-text-Lusofona-On-Premise
+    litellm_params:
+      model: ollama/nomic-embed-text
+      api_base: http://192.168.80.6:11434
+      api_key: none
+      rpm: 120
+    model_info:
+      model_alias: nomic-embed-text
+      host_node: 192.168.80.6
+      provider: on-premise
+      mode: embedding
+
+  - model_name: embeddings-embeddinggemma-Lusofona-On-Premise
+    litellm_params:
+      model: ollama/embeddinggemma
+      api_base: http://192.168.80.6:11434
+      api_key: none
+      rpm: 120
+    model_info:
+      model_alias: embeddinggemma
+      host_node: 192.168.80.6
+      provider: on-premise
+      mode: embedding
+
+  - model_name: embeddings-mxbai-embed-large-Lusofona-On-Premise
+    litellm_params:
+      model: ollama/mxbai-embed-large
+      api_base: http://192.168.80.6:11434
+      api_key: none
+      rpm: 120
+    model_info:
+      model_alias: mxbai-embed-large
+      host_node: 192.168.80.6
+      provider: on-premise
+      mode: embedding
+
+  - model_name: embeddings-multilingual-e5-base-Lusofona-On-Premise
+    litellm_params:
+      model: ollama/yxchia/multilingual-e5-base
+      api_base: http://192.168.80.6:11434
+      api_key: none
+      rpm: 120
+    model_info:
+      model_alias: multilingual-e5-base
+      host_node: 192.168.80.6
+      provider: on-premise
+      mode: embedding
+
+  - model_name: embeddings-multilingual-e5-large-Lusofona-On-Premise
+    litellm_params:
+      model: ollama/zylonai/multilingual-e5-large
+      api_base: http://192.168.80.6:11434
+      api_key: none
+      rpm: 120
+    model_info:
+      model_alias: multilingual-e5-large
+      host_node: 192.168.80.6
+      provider: on-premise
+      mode: embedding
+
+  # On-Premise Reranker Model via Ollama (pop06)
+  - model_name: reranker-Qwen3-Reranker-4B-Lusofona-On-Premise
+    litellm_params:
+      model: ollama/dengcao/Qwen3-Reranker-4B:Q4_K_M
+      api_base: http://192.168.80.6:11434
+      api_key: none
+      rpm: 120
+    model_info:
+      model_alias: Qwen3-Reranker-4B
+      host_node: 192.168.80.6
+      provider: on-premise
+      mode: rerank
+
+  - model_name: reranker-mxbai-rerank-large-v2-Lusofona-On-Premise
+    litellm_params:
+      model: ollama/rjmalagon/mxbai-rerank-large-v2:1.5b-fp16
+      api_base: http://192.168.80.6:11434
+      api_key: none
+      rpm: 120
+    model_info:
+      model_alias: mxbai-rerank-large-v2
+      host_node: 192.168.80.6
+      provider: on-premise
+      mode: rerank
 
   # Internal Infrastructure Model - Qwen2.5 VL 7B Instruct (pop05)
   - model_name: Qwen2.5-VL-7B-Instruct-Lusofona-On-Premise
