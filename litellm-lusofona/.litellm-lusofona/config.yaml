@@ -21,6 +21,7 @@ include:
   - models/on-premise.yaml
   - models/groq.yaml
   - models/sambanova.yaml
+  - models/openai.yaml
   
   # ⚙️ System settings configurations  
   - settings/litellm.yaml
