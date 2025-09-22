@@ -577,6 +577,74 @@ customize_continue_with_email_text() {
     fi
 }
 
+# Function to customize "Continue with LDAP" text for consistency
+customize_continue_with_ldap_text() {
+    echo_info "Customizing 'Continue with LDAP' text for consistency with main button..."
+    
+    local updated_files=0
+    local failed_files=0
+    
+    # Language-specific translations for consistency with Authenticate button
+    declare -A ldap_translations=(
+        ["pt-PT"]="Aceder com dados Institucionais"
+        ["pt-BR"]="Acessar com dados Institucionais"
+        ["en-US"]="Access with Institutional Credentials"
+        ["en-GB"]="Access with Institutional Credentials"
+        ["es-ES"]="Acceder con credenciales institucionales"
+        ["fr-FR"]="Accéder avec les identifiants institutionnels"
+        ["de-DE"]="Mit institutionellen Anmeldedaten anmelden"
+        ["it-IT"]="Accedi con le credenziali istituzionali"
+    )
+    
+    # Default fallback for other languages
+    local default_ldap_text="Access with Institutional Credentials"
+    
+    # Process all translation files
+    for locale_dir in src/lib/i18n/locales/*/; do
+        if [ -d "$locale_dir" ]; then
+            local locale=$(basename "$locale_dir")
+            local translation_file="${locale_dir}translation.json"
+            
+            if [ -f "$translation_file" ]; then
+                # Get the appropriate translation or use default
+                local ldap_text="${ldap_translations[$locale]:-$default_ldap_text}"
+                
+                # Check if already customized
+                if grep -q '"Continue with LDAP": "'"$ldap_text"'"' "$translation_file"; then
+                    echo_success "Updated $locale Continue with LDAP text (already customized)"
+                    updated_files=$((updated_files + 1))
+                elif grep -q '"Continue with LDAP":' "$translation_file"; then
+                    if safe_replace_with_backup \
+                        "$translation_file" \
+                        '"Continue with LDAP": "Continue with LDAP"' \
+                        '"Continue with LDAP": "'"$ldap_text"'"' \
+                        "Updated $locale Continue with LDAP text (replaced existing)"; then
+                        updated_files=$((updated_files + 1))
+                    else
+                        # Try alternative format without quotes
+                        if grep -q '"Continue with LDAP":[[:space:]]*"[^"]*"' "$translation_file"; then
+                            # Use sed for more flexible replacement
+                            sed -i 's/"Continue with LDAP":[[:space:]]*"[^"]*"/"Continue with LDAP": "'"$ldap_text"'"/g' "$translation_file"
+                            echo_success "Updated $locale Continue with LDAP text (sed replacement)"
+                            updated_files=$((updated_files + 1))
+                        else
+                            failed_files=$((failed_files + 1))
+                        fi
+                    fi
+                else
+                    echo_info "Continue with LDAP key not found in $locale - may not exist in this version"
+                fi
+            fi
+        fi
+    done
+    
+    echo_info "Continue with LDAP customization complete: $updated_files updated, $failed_files failed"
+    
+    if [ $updated_files -gt 0 ]; then
+        echo_success "'Continue with LDAP' text updated for consistency across all languages"
+    fi
+}
+
 # --- VALIDATION SYSTEM ---
 
 # Validation result tracking
@@ -1100,6 +1168,9 @@ customize_authenticate_button_text
 # 4.2. Customize "Continue with Email" text to be discrete
 customize_continue_with_email_text
 
+# 4.3. Customize "Continue with LDAP" text for consistency
+customize_continue_with_ldap_text
+
 # 5. Copy custom .env file if it exists
 if [ -f "../.lusochat-ldap/.env" ]; then
     echo_info "Copying custom .env file..."
@@ -1135,6 +1206,7 @@ echo_info "  ✓ Replaced custom icons (if available and structure verified)"
 echo_info "  ✓ Updated login form placeholders for all languages"
 echo_info "  ✓ Updated Authenticate button text for multiple languages (PT: 'Aceder com dados Institucionais')"
 echo_info "  ✓ Replaced 'Continue with Email' with discrete emoji (⚙️) to avoid user confusion"
+echo_info "  ✓ Updated 'Continue with LDAP' text for consistency with main button"
 echo_info "  ✓ Updated app.html metadata (browser tab, PWA, OpenSearch)"
 echo_info "  ✓ Updated manifest.json with comprehensive branding"
 echo_info ""
