@@ -105,15 +105,15 @@ model_list:
       provider: on-premise
       mode: rerank
 
-  # Internal Infrastructure Model - Qwen2.5 VL 7B Instruct (pop05)
-  - model_name: Qwen2.5-VL-7B-Instruct-Lusofona-On-Premise
+  # Internal Infrastructure Model - Qwen3 8B (pop05)
+  - model_name: Qwen3-8B-Lusofona-On-Premise
     litellm_params:
-      model: openai/Qwen2.5-VL-7B-Instruct-Q6_K
+      model: openai/Qwen3-8B-Q4_K_M
       api_base: http://192.168.80.5:8080
       api_key: none
       rpm: 100000
     model_info:
-      model_alias: Qwen2.5-VL-7B-Instruct-Q6_K
+      model_alias: Qwen3-8B-Q4_K_M
       host_node: 192.168.80.5
 
   # Internal Infrastructure Model - DeepSeek R1 Distill Llama 8B (pop04)
