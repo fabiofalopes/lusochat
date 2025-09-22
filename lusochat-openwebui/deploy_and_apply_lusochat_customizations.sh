@@ -322,26 +322,47 @@ update_manifest_files() {
     
     # Update site.webmanifest
     if [ -f "static/static/site.webmanifest" ]; then
-        safe_replace_with_backup \
-            "static/static/site.webmanifest" \
-            '"name": "Open WebUI"' \
-            '"name": "Lusochat"' \
-            "Updated app name in site.webmanifest" || true
-            
-        safe_replace_with_backup \
-            "static/static/site.webmanifest" \
-            '"short_name": "WebUI"' \
-            '"short_name": "Lusochat"' \
-            "Updated short name in site.webmanifest" || true
+        # Check if already customized for name
+        if grep -q '"name": "Lusochat"' "static/static/site.webmanifest"; then
+            echo_success "Site.webmanifest name already set to 'Lusochat' - skipping"
+        elif grep -q '"name": "Open WebUI"' "static/static/site.webmanifest"; then
+            safe_replace_with_backup \
+                "static/static/site.webmanifest" \
+                '"name": "Open WebUI"' \
+                '"name": "Lusochat"' \
+                "Updated app name in site.webmanifest" || true
+        else
+            echo_warning "Expected name pattern not found in site.webmanifest - skipping name update"
+        fi
+        
+        # Check if already customized for short_name  
+        if grep -q '"short_name": "Lusochat"' "static/static/site.webmanifest"; then
+            echo_success "Site.webmanifest short_name already set to 'Lusochat' - skipping"
+        elif grep -q '"short_name": "WebUI"' "static/static/site.webmanifest"; then
+            safe_replace_with_backup \
+                "static/static/site.webmanifest" \
+                '"short_name": "WebUI"' \
+                '"short_name": "Lusochat"' \
+                "Updated short name in site.webmanifest" || true
+        else
+            echo_warning "Expected short_name pattern not found in site.webmanifest - skipping short_name update"
+        fi
     fi
     
     # Update opensearch.xml if it exists
     if [ -f "static/opensearch.xml" ]; then
-        safe_replace_with_backup \
-            "static/opensearch.xml" \
-            "Open WebUI" \
-            "Lusochat" \
-            "Updated opensearch.xml app name" || true
+        # Check if already customized
+        if grep -q "Lusochat" "static/opensearch.xml"; then
+            echo_success "Opensearch.xml already customized with 'Lusochat' - skipping"
+        elif grep -q "Open WebUI" "static/opensearch.xml"; then
+            safe_replace_with_backup \
+                "static/opensearch.xml" \
+                "Open WebUI" \
+                "Lusochat" \
+                "Updated opensearch.xml app name" || true
+        else
+            echo_warning "Expected pattern not found in opensearch.xml - skipping opensearch update"
+        fi
     fi
 }
 
@@ -354,14 +375,14 @@ customize_login_placeholders() {
     
     # Language-specific username placeholders
     declare -A username_placeholders=(
-        ["pt-PT"]="Nº aluno/professor/funcionário (aXXXXXX, pXXXX, fXXXX)"
-        ["pt-BR"]="Nº aluno/professor/funcionário (aXXXXXX, pXXXX, fXXXX)"
-        ["en-US"]="Student/teacher/staff number (aXXXXXX, pXXXX, fXXXX)"
-        ["en-GB"]="Student/teacher/staff number (aXXXXXX, pXXXX, fXXXX)"
-        ["es-ES"]="Nº estudiante/profesor/personal (aXXXXXX, pXXXX, fXXXX)"
-        ["fr-FR"]="Nº étudiant/professeur/personnel (aXXXXXX, pXXXX, fXXXX)"
-        ["de-DE"]="Student/Lehrer/Personal-Nr. (aXXXXXX, pXXXX, fXXXX)"
-        ["it-IT"]="Nº studente/professore/personale (aXXXXXX, pXXXX, fXXXX)"
+        ["pt-PT"]="Estudante (aXXXXXXXX) / Docente (pXXXX) / Colaborador (fXXXX)"
+        ["pt-BR"]="Estudante (aXXXXXXXX) / Docente (pXXXX) / Colaborador (fXXXX)"
+        ["en-US"]="Student (aXXXXXXXX) / Teacher (pXXXX) / Staff (fXXXX)"
+        ["en-GB"]="Student (aXXXXXXXX) / Teacher (pXXXX) / Staff (fXXXX)"
+        ["es-ES"]="Estudiante (aXXXXXXXX) / Profesor (pXXXX) / Personal (fXXXX)"
+        ["fr-FR"]="Étudiant (aXXXXXXXX) / Professeur (pXXXX) / Personnel (fXXXX)"
+        ["de-DE"]="Student (aXXXXXXXX) / Lehrer (pXXXX) / Personal (fXXXX)"
+        ["it-IT"]="Studente (aXXXXXXXX) / Professore (pXXXX) / Personale (fXXXX)"
     )
     
     # Language-specific sign-in titles (without "with LDAP")
@@ -377,7 +398,7 @@ customize_login_placeholders() {
     )
     
     # Default fallback for other languages
-    local default_placeholder="Student/staff number (aXXXXXX, pXXXX, fXXXX)"
+    local default_placeholder="Student (aXXXXXXXX) / Teacher (pXXXX) / Staff (fXXXX)"
     local default_signin_title="Sign in to {{WEBUI_NAME}}"
     
     # Process all translation files
@@ -437,6 +458,125 @@ customize_login_placeholders() {
     fi
 }
 
+# Function to customize the Authenticate button text for LDAP
+customize_authenticate_button_text() {
+    echo_info "Customizing Authenticate button text for multiple languages..."
+    
+    local updated_files=0
+    local failed_files=0
+    
+    # Language-specific translations for the Authenticate button
+    declare -A authenticate_translations=(
+        ["pt-PT"]="Aceder com dados Institucionais"
+        ["pt-BR"]="Aceder com dados Institucionais"
+        ["en-US"]="Access with Institutional Credentials"
+        ["en-GB"]="Access with Institutional Credentials"
+        ["es-ES"]="Acceder con credenciales institucionales"
+        ["fr-FR"]="Accéder avec les identifiants institutionnels"
+        ["de-DE"]="Mit institutionellen Anmeldedaten zugreifen"
+        ["it-IT"]="Accedi con credenziali istituzionali"
+    )
+    
+    # Default fallback for other languages
+    local default_authenticate="Access with Institutional Credentials"
+    
+    # Process all translation files
+    for locale_dir in src/lib/i18n/locales/*/; do
+        if [ -d "$locale_dir" ]; then
+            local locale=$(basename "$locale_dir")
+            local translation_file="$locale_dir/translation.json"
+            
+            if [ -f "$translation_file" ]; then
+                local authenticate_text="${authenticate_translations[$locale]:-$default_authenticate}"
+                
+                # Update empty Authenticate entries
+                if grep -q '"Authenticate": ""' "$translation_file"; then
+                    if safe_replace_with_backup \
+                        "$translation_file" \
+                        '"Authenticate": ""' \
+                        "\"Authenticate\": \"$authenticate_text\"" \
+                        "Updated $locale Authenticate button text"; then
+                        updated_files=$((updated_files + 1))
+                    else
+                        failed_files=$((failed_files + 1))
+                    fi
+                elif grep -q '"Authenticate":' "$translation_file"; then
+                    # Update existing non-empty entries
+                    local current_line=$(grep '"Authenticate":' "$translation_file")
+                    if safe_replace_with_backup \
+                        "$translation_file" \
+                        "$current_line" \
+                        "    \"Authenticate\": \"$authenticate_text\"," \
+                        "Updated $locale Authenticate button text (replaced existing)"; then
+                        updated_files=$((updated_files + 1))
+                    else
+                        failed_files=$((failed_files + 1))
+                    fi
+                fi
+            fi
+        fi
+    done
+    
+    echo_info "Authenticate button customization complete: $updated_files updated, $failed_files failed"
+    
+    if [ $updated_files -gt 0 ]; then
+        echo_success "Authenticate button text customized for multiple languages"
+    fi
+}
+
+# Function to customize "Continue with Email" text to be more discrete
+customize_continue_with_email_text() {
+    echo_info "Customizing 'Continue with Email' text to be more discrete..."
+    
+    local updated_files=0
+    local failed_files=0
+    
+    # Use a discrete emoji for all languages to avoid confusion
+    # ⚙️ suggests admin/settings functionality without being too obvious
+    local discrete_text="⚙️"
+    
+    # Process all translation files
+    for locale_dir in src/lib/i18n/locales/*/; do
+        if [ -d "$locale_dir" ]; then
+            local locale=$(basename "$locale_dir")
+            local translation_file="$locale_dir/translation.json"
+            
+            if [ -f "$translation_file" ]; then
+                # Update empty "Continue with Email" entries
+                if grep -q '"Continue with Email": ""' "$translation_file"; then
+                    if safe_replace_with_backup \
+                        "$translation_file" \
+                        '"Continue with Email": ""' \
+                        "\"Continue with Email\": \"$discrete_text\"" \
+                        "Updated $locale Continue with Email text"; then
+                        updated_files=$((updated_files + 1))
+                    else
+                        failed_files=$((failed_files + 1))
+                    fi
+                elif grep -q '"Continue with Email":' "$translation_file"; then
+                    # Update existing non-empty entries
+                    local current_line=$(grep '"Continue with Email":' "$translation_file")
+                    if safe_replace_with_backup \
+                        "$translation_file" \
+                        "$current_line" \
+                        "    \"Continue with Email\": \"$discrete_text\"," \
+                        "Updated $locale Continue with Email text (replaced existing)"; then
+                        updated_files=$((updated_files + 1))
+                    else
+                        failed_files=$((failed_files + 1))
+                    fi
+                fi
+            fi
+        fi
+    done
+    
+    echo_info "Continue with Email customization complete: $updated_files updated, $failed_files failed"
+    
+    if [ $updated_files -gt 0 ]; then
+        echo_success "'Continue with Email' text replaced with discrete emoji (⚙️) across all languages"
+    fi
+}
+
 # --- VALIDATION SYSTEM ---
 
 # Validation result tracking
@@ -489,6 +629,8 @@ validate_file_structure() {
         "static/static/apple-touch-icon.png:Apple touch icon replacement"
         "static/opensearch.xml:OpenSearch name updates"
         "src/lib/i18n/locales/pt-PT/translation.json:Login form placeholder customization"
+        "src/lib/i18n/locales/pt-PT/translation.json:Authenticate button text customization"
+        "src/lib/i18n/locales/pt-PT/translation.json:Continue with Email text customization"
     )
     
     echo_info "Checking critical files..."
@@ -525,14 +667,16 @@ validate_customization_targets() {
         echo_info "Validating constants.ts patterns..."
         if grep -q "export const APP_NAME = 'Open WebUI';" "src/lib/constants.ts"; then
             echo_success "Found expected APP_NAME pattern in constants.ts"
+        elif grep -q "export const APP_NAME = 'Lusochat';" "src/lib/constants.ts"; then
+            echo_success "Found APP_NAME already customized to 'Lusochat' in constants.ts"
         else
             # Check for variations
-            if grep -q "APP_NAME.*Open WebUI" "src/lib/constants.ts"; then
+            if grep -q "APP_NAME.*Open WebUI\|APP_NAME.*Lusochat" "src/lib/constants.ts"; then
                 log_validation_result "WARNING" "APP_NAME pattern in constants.ts has changed format" "Frontend customization may fail - manual review needed"
                 echo_info "Current APP_NAME line:"
-                grep "APP_NAME.*Open WebUI" "src/lib/constants.ts" || echo "  (not found)"
+                grep "APP_NAME.*Open WebUI\|APP_NAME.*Lusochat" "src/lib/constants.ts" || echo "  (not found)"
             else
-                log_validation_result "ERROR" "No APP_NAME with 'Open WebUI' found in constants.ts" "Frontend customization will fail"
+                log_validation_result "ERROR" "No APP_NAME with expected values found in constants.ts" "Frontend customization will fail"
             fi
         fi
     fi
@@ -550,6 +694,8 @@ validate_customization_targets() {
             else
                 log_validation_result "WARNING" "WEBUI_NAME pattern context has changed" "Backend fix may cause syntax errors"
             fi
+        elif grep -q '# WEBUI_NAME += " (Open WebUI)".*Commented out' "backend/open_webui/env.py"; then
+            echo_success "Found WEBUI_NAME appending pattern already customized (commented out) in env.py"
         else
             # Check for variations
             if grep -q "WEBUI_NAME.*Open WebUI" "backend/open_webui/env.py"; then
@@ -557,7 +703,7 @@ validate_customization_targets() {
                 echo_info "Current WEBUI_NAME lines:"
                 grep -n "WEBUI_NAME.*Open WebUI" "backend/open_webui/env.py" || echo "  (not found)"
             else
-                log_validation_result "ERROR" "No WEBUI_NAME with 'Open WebUI' found in env.py" "Backend customization will fail"
+                log_validation_result "ERROR" "No WEBUI_NAME with expected patterns found in env.py" "Backend customization will fail"
             fi
         fi
     fi
@@ -590,6 +736,8 @@ validate_customization_targets() {
     if [ -f "static/static/site.webmanifest" ]; then
         if grep -q '"name": "Open WebUI"' "static/static/site.webmanifest"; then
             echo_success "Found expected app name pattern in site.webmanifest"
+        elif grep -q '"name": "Lusochat"' "static/static/site.webmanifest"; then
+            echo_success "Found app name already customized to 'Lusochat' in site.webmanifest"
         else
             log_validation_result "WARNING" "App name pattern in site.webmanifest has changed" "Manifest customization may fail"
         fi
@@ -711,11 +859,19 @@ echo_info "Applying customizations..."
 echo_info "Checking for constants.ts customizations..."
 if [ -f "src/lib/constants.ts" ]; then
     echo_info "Updating APP_NAME in constants.ts..."
-    safe_replace_with_backup \
-        "src/lib/constants.ts" \
-        "export const APP_NAME = 'Open WebUI';" \
-        "export const APP_NAME = 'Lusochat';" \
-        "Updated APP_NAME to Lusochat" || true
+    
+    # Check if already customized
+    if grep -q "export const APP_NAME = 'Lusochat';" "src/lib/constants.ts"; then
+        echo_success "APP_NAME already set to 'Lusochat' - skipping"
+    elif grep -q "export const APP_NAME = 'Open WebUI';" "src/lib/constants.ts"; then
+        safe_replace_with_backup \
+            "src/lib/constants.ts" \
+            "export const APP_NAME = 'Open WebUI';" \
+            "export const APP_NAME = 'Lusochat';" \
+            "Updated APP_NAME to Lusochat" || true
+    else
+        echo_warning "APP_NAME pattern not found in expected format - skipping constants.ts customization"
+    fi
 else
     echo_info "constants.ts not found - skipping frontend title updates"
 fi
@@ -723,19 +879,31 @@ fi
 # 2. Fix backend WEBUI_NAME logic in env.py
 echo_info "Updating WEBUI_NAME logic in backend env.py..."
 if [ -f "backend/open_webui/env.py" ]; then
-    # Comment out the line that appends "(Open WebUI)" to custom names
-    safe_replace_with_backup \
-        "backend/open_webui/env.py" \
-        '    WEBUI_NAME += " (Open WebUI)"' \
-        '    # WEBUI_NAME += " (Open WebUI)"  # Commented out to prevent appending' \
-        "Commented out WEBUI_NAME appending logic" || true
-    
-    # Add pass statement after the if block to prevent Python syntax error
-    if grep -q "# WEBUI_NAME.*Commented out" backend/open_webui/env.py; then
-        # Find the line number and add pass after it
-        line_num=$(grep -n "# WEBUI_NAME.*Commented out" backend/open_webui/env.py | cut -d: -f1)
-        sed -i "${line_num}a\\    pass" backend/open_webui/env.py
-        echo_success "Added pass statement to fix Python syntax"
+    # Check if already customized
+    if grep -q "# WEBUI_NAME.*Commented out to prevent appending" "backend/open_webui/env.py"; then
+        echo_success "WEBUI_NAME appending logic already commented out - skipping"
+    elif grep -q 'WEBUI_NAME += " (Open WebUI)"' "backend/open_webui/env.py"; then
+        # Comment out the line that appends "(Open WebUI)" to custom names
+        safe_replace_with_backup \
+            "backend/open_webui/env.py" \
+            '    WEBUI_NAME += " (Open WebUI)"' \
+            '    # WEBUI_NAME += " (Open WebUI)"  # Commented out to prevent appending' \
+            "Commented out WEBUI_NAME appending logic" || true
+        
+        # Add pass statement after the if block to prevent Python syntax error
+        if grep -q "# WEBUI_NAME.*Commented out" backend/open_webui/env.py; then
+            # Find the line number and add pass after it
+            line_num=$(grep -n "# WEBUI_NAME.*Commented out" backend/open_webui/env.py | cut -d: -f1)
+            # Check if pass is not already there
+            if ! sed -n "$((line_num + 1))p" backend/open_webui/env.py | grep -q "pass"; then
+                sed -i "${line_num}a\\    pass" backend/open_webui/env.py
+                echo_success "Added pass statement to fix Python syntax"
+            else
+                echo_success "Pass statement already exists"
+            fi
+        fi
+    else
+        echo_warning "WEBUI_NAME pattern not found in expected format - skipping env.py customization"
     fi
 else
     echo_info "backend/open_webui/env.py not found - skipping backend WEBUI_NAME fix"
@@ -782,28 +950,28 @@ echo_info "===== COMPLETE METADATA CUSTOMIZATION ====="
 if [ -f "src/app.html" ]; then
     echo_info "Updating remaining Open WebUI references in app.html..."
     
-    # Update apple-mobile-web-app-title
-    safe_replace_with_backup \
-        "src/app.html" \
-        '<meta name="apple-mobile-web-app-title" content="Open WebUI" />' \
-        '<meta name="apple-mobile-web-app-title" content="Lusochat" />' \
-        "Updated apple-mobile-web-app-title to Lusochat" || true
+    # Update apple-mobile-web-app-title (REMOVED - tag no longer exists in current OpenWebUI)
+    # safe_replace_with_backup \
+    #     "src/app.html" \
+    #     '<meta name="apple-mobile-web-app-title" content="Open WebUI" />' \
+    #     '<meta name="apple-mobile-web-app-title" content="Lusochat" />' \
+    #     "Updated apple-mobile-web-app-title to Lusochat" || true
     
-    # Update meta description
-    safe_replace_with_backup \
-        "src/app.html" \
-        '<meta name="description" content="Open WebUI" />' \
-        '<meta name="description" content="Lusochat - Lusófona University AI Chat Interface" />' \
-        "Updated meta description to Lusochat" || true
+    # Update meta description (REMOVED - tag no longer exists in current OpenWebUI)
+    # safe_replace_with_backup \
+    #     "src/app.html" \
+    #     '<meta name="description" content="Open WebUI" />' \
+    #     '<meta name="description" content="Lusochat - Lusófona University AI Chat Interface" />' \
+    #     "Updated meta description to Lusochat" || true
     
-    # Update opensearch title
-    safe_replace_with_backup \
-        "src/app.html" \
-        'title="Open WebUI"' \
-        'title="Lusochat"' \
-        "Updated opensearch title to Lusochat" || true
+    # Update opensearch title (REMOVED - tag no longer exists in current OpenWebUI)
+    # safe_replace_with_backup \
+    #     "src/app.html" \
+    #     'title="Open WebUI"' \
+    #     'title="Lusochat"' \
+    #     "Updated opensearch title to Lusochat" || true
     
-    # Update page title (most important for browser tab)
+    # Update page title (most important for browser tab) - THIS ONE WORKS
     safe_replace_with_backup \
         "src/app.html" \
         '<title>Open WebUI</title>' \
@@ -926,6 +1094,12 @@ echo_info ""
 # 4. Customize login form placeholders for all languages
 customize_login_placeholders
 
+# 4.1. Customize Authenticate button text for multiple languages
+customize_authenticate_button_text
+
+# 4.2. Customize "Continue with Email" text to be discrete
+customize_continue_with_email_text
+
 # 5. Copy custom .env file if it exists
 if [ -f "../.lusochat-ldap/.env" ]; then
     echo_info "Copying custom .env file..."
@@ -959,6 +1133,8 @@ echo_info "  ✓ Applied custom .env file (if available)"
 echo_info "  ✓ Applied custom docker-compose.yaml (if available)"
 echo_info "  ✓ Replaced custom icons (if available and structure verified)"
 echo_info "  ✓ Updated login form placeholders for all languages"
+echo_info "  ✓ Updated Authenticate button text for multiple languages (PT: 'Aceder com dados Institucionais')"
+echo_info "  ✓ Replaced 'Continue with Email' with discrete emoji (⚙️) to avoid user confusion"
 echo_info "  ✓ Updated app.html metadata (browser tab, PWA, OpenSearch)"
 echo_info "  ✓ Updated manifest.json with comprehensive branding"
 echo_info ""
