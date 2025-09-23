@@ -22,6 +22,7 @@ include:
   - models/groq.yaml
   - models/sambanova.yaml
   - models/openai.yaml
+  - models/gemini.yaml
   
   # ⚙️ System settings configurations  
   - settings/litellm.yaml

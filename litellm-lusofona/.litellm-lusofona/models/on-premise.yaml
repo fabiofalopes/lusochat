@@ -1,8 +1,40 @@
 # 🏢 On-Premise Model Configurations
 # Lusófona Internal Infrastructure Models
-# 
-# These models run on internal Lusófona servers and provide
-# local AI capabilities without external dependencies.
+#
+# Cost tracking – IMPORTANT
+# - You can track spend either per token or per second. We default to per-token placeholders (0.0) so
+#   LiteLLM will surface response_cost in logs, and you can later plug in your internal pricing.
+# - If you prefer time-based accounting (GPU-hour amortization), replace token pricing with:
+#     input_cost_per_second: <your rate>
+#   (and optionally output_cost_per_second)
+# - Rerankers typically use per-query pricing: input_cost_per_query
+# - Docs: https://docs.litellm.ai/docs/observability/custom_callback
+#
+# How to calculate your internal rate card:
+# 1. GPU Cost Amortization:
+#    - Hardware cost: ~€8,000-15,000 per RTX 4090/A6000
+#    - Amortize over 3 years = €7-35/day per GPU
+#    - Add power (~300W @ €0.15/kWh = €1.08/day), cooling, space
+#    - Total: ~€10-40/day per GPU → €0.0001-0.0005/second
+#
+# 2. Cloud Equivalency Method:
+#    - Compare to similar cloud models (e.g., OpenAI embedding ~$0.02/1M tokens)
+#    - Apply discount for self-hosting (typically 50-80% less)
+#    - Embeddings: $0.004-0.01/1M tokens = 0.000000004-0.00000001 per token
+#    - Chat LLMs: $0.1-0.5/1M tokens = 0.0000001-0.0000005 per token
+#
+# 3. Operational Cost Method:
+#    - Estimate total monthly compute costs (power, maintenance, staff)
+#    - Divide by expected monthly token volume
+#    - Add 20-30% margin for overhead
+#
+# Example rates for reference:
+# - Embeddings: 0.000000005 per token (0.5¢/1M tokens)
+# - Chat 8B models: 0.0000001 per input token, 0.0000002 per output token
+# - Rerankers: 0.0001 per query
+#
+# Note: Most on-prem usage here is embeddings (more than LLMs). Ensure embedding costs are filled in for
+# accurate estimates.
 
 model_list:
 
@@ -15,10 +47,8 @@ model_list:
       api_key: none
       rpm: 120
     model_info:
-      model_alias: bge-m3
-      host_node: 192.168.80.6
-      provider: on-premise
       mode: embedding
+      input_cost_per_token: 0.000000015   # ~75% discount from OpenAI text-embedding-3-small ($0.015/1M vs $0.02/1M)
 
   - model_name: embeddings-nomic-embed-text-Lusofona-On-Premise
     litellm_params:
@@ -27,10 +57,8 @@ model_list:
       api_key: none
       rpm: 120
     model_info:
-      model_alias: nomic-embed-text
-      host_node: 192.168.80.6
-      provider: on-premise
       mode: embedding
+      input_cost_per_token: 0.000000012   # compact embedding model, slightly lower cost
 
   - model_name: embeddings-embeddinggemma-Lusofona-On-Premise
     litellm_params:
@@ -39,10 +67,8 @@ model_list:
       api_key: none
       rpm: 120
     model_info:
-      model_alias: embeddinggemma
-      host_node: 192.168.80.6
-      provider: on-premise
       mode: embedding
+      input_cost_per_token: 0.000000018   # Google Gemma-based, premium embeddings
 
   - model_name: embeddings-mxbai-embed-large-Lusofona-On-Premise
     litellm_params:
@@ -51,10 +77,8 @@ model_list:
       api_key: none
       rpm: 120
     model_info:
-      model_alias: mxbai-embed-large
-      host_node: 192.168.80.6
-      provider: on-premise
       mode: embedding
+      input_cost_per_token: 0.000000095   # large embedding model, ~75% discount from Azure text-embedding-3-large
 
   - model_name: embeddings-multilingual-e5-base-Lusofona-On-Premise
     litellm_params:
@@ -63,10 +87,8 @@ model_list:
       api_key: none
       rpm: 120
     model_info:
-      model_alias: multilingual-e5-base
-      host_node: 192.168.80.6
-      provider: on-premise
       mode: embedding
+      input_cost_per_token: 0.000000015   # base multilingual model
 
   - model_name: embeddings-multilingual-e5-large-Lusofona-On-Premise
     litellm_params:
@@ -75,10 +97,8 @@ model_list:
       api_key: none
       rpm: 120
     model_info:
-      model_alias: multilingual-e5-large
-      host_node: 192.168.80.6
-      provider: on-premise
       mode: embedding
+      input_cost_per_token: 0.000000025   # large multilingual model, higher complexity
 
   # On-Premise Reranker Model via Ollama (pop06)
   - model_name: reranker-Qwen3-Reranker-4B-Lusofona-On-Premise
@@ -88,10 +108,8 @@ model_list:
       api_key: none
       rpm: 120
     model_info:
-      model_alias: Qwen3-Reranker-4B
-      host_node: 192.168.80.6
-      provider: on-premise
       mode: rerank
+      input_cost_per_query: 0.0002   # 4B reranker, comparable to enterprise solutions
 
   - model_name: reranker-mxbai-rerank-large-v2-Lusofona-On-Premise
     litellm_params:
@@ -100,10 +118,8 @@ model_list:
       api_key: none
       rpm: 120
     model_info:
-      model_alias: mxbai-rerank-large-v2
-      host_node: 192.168.80.6
-      provider: on-premise
       mode: rerank
+      input_cost_per_query: 0.0001   # smaller 1.5B model, lower cost per query
 
   # Internal Infrastructure Model - Qwen3 8B (pop05)
   - model_name: Qwen3-8B-Lusofona-On-Premise
@@ -113,8 +129,9 @@ model_list:
       api_key: none
       rpm: 100000
     model_info:
-      model_alias: Qwen3-8B-Q4_K_M
-      host_node: 192.168.80.5
+      mode: chat
+      input_cost_per_token: 0.0000009    # 8B model, ~50% discount from cloud 7-8B models
+      output_cost_per_token: 0.0000012   # output slightly higher cost
 
   # Internal Infrastructure Model - DeepSeek R1 Distill Llama 8B (pop04)
   - model_name: DeepSeek-R1-Distill-Llama-8B-Lusofona-On-Premise
@@ -124,8 +141,9 @@ model_list:
       api_key: none
       rpm: 100000
     model_info:
-      model_alias: DeepSeek-R1-Distill-Llama-8B-Q6_K
-      host_node: 192.168.80.4
+      mode: chat
+      input_cost_per_token: 0.0000010    # reasoning-distilled model, premium 8B
+      output_cost_per_token: 0.0000015   # higher quality output
 
   # Internal Infrastructure Model - Meta Llama 3.1 8B Instruct (pop02)
   - model_name: Meta-Llama-3.1-8B-Instruct-Lusofona-On-Premise
@@ -135,8 +153,9 @@ model_list:
       api_key: none
       rpm: 100000
     model_info:
-      model_alias: Meta-Llama-3.1-8B-Instruct-Q4_K_M
-      host_node: 192.168.80.12
+      mode: chat
+      input_cost_per_token: 0.0000008    # standard Llama 3.1 8B, efficient
+      output_cost_per_token: 0.0000010   # comparable to Cloudflare pricing
 
   # Internal Infrastructure Model - Gemma 3 4B IT (pop01)
   - model_name: gemma-3-4b-it-Lusofona-On-Premise
@@ -146,5 +165,6 @@ model_list:
       api_key: none
       rpm: 100000
     model_info:
-      model_alias: gemma-3-4b-it-Q8_0
-      host_node: 192.168.80.11 
+      mode: chat
+      input_cost_per_token: 0.0000005    # smaller 4B model, lowest cost
+      output_cost_per_token: 0.0000007   # efficient compact model

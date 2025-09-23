@@ -11,5 +11,9 @@ litellm_settings:
   
   # Request handling
   drop_params: True
+  # Explicitly drop any stray provider-specific params if present
+  additional_drop_params:
+    - GROQ_TRANSCRIPTION_PARAMS
+    - OPENAI_TRANSCRIPTION_PARAMS
   num_retries: 3
   request_timeout: 30 

@@ -152,6 +152,8 @@ def cleanup_and_clone():
     run_command(["python3", "apply_local_unlock_patch.py"], cwd=CUSTOM_CONFIG_DIR)
     success("Patch applied successfully.")
 
+    
+
 def copy_custom_configs():
     """Copy our custom configurations to the LiteLLM directory."""
     info("Copying custom configurations...")

@@ -1,0 +1,180 @@
+# =============================================================================
+# GEMINI MODELS CONFIGURATION
+# =============================================================================
+# This configuration includes the main current Gemini models from Google AI Studio
+# Excludes deprecated models (Gemini 1.5 Flash, 1.5 Flash-8B, 1.5 Pro)
+# Pricing based on official Gemini API pricing documentation
+# Last updated: September 23, 2025
+# Documentation: https://ai.google.dev/gemini-api/docs/models
+# Pricing: https://ai.google.dev/gemini-api/docs/pricing
+
+model_list:
+  # =============================================================================
+  # GEMINI 2.5 SERIES - MAIN TEXT MODELS
+  # =============================================================================
+  
+  - model_name: gemini-2.5-pro
+    litellm_params:
+      model: gemini/gemini-2.5-pro
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: chat
+      max_tokens: 65536  # Output token limit
+      input_cost_per_token: 0.00000125  # $1.25 per 1M tokens (<=200k prompts)
+      output_cost_per_token: 0.00001     # $10.00 per 1M tokens (<=200k prompts)
+      cache_read_input_token_cost: 0.00000031  # $0.31 per 1M tokens
+      supports_vision: true
+      supports_function_calling: true
+      supports_assistant_prefill: false
+
+  - model_name: gemini-2.5-flash
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: chat
+      max_tokens: 65536  # Output token limit
+      input_cost_per_token: 0.0000003   # $0.30 per 1M tokens (text/image/video)
+      output_cost_per_token: 0.0000025  # $2.50 per 1M tokens
+      cache_read_input_token_cost: 0.000000075  # $0.075 per 1M tokens
+      supports_vision: true
+      supports_function_calling: true
+      supports_assistant_prefill: false
+
+  - model_name: gemini-2.5-flash-lite
+    litellm_params:
+      model: gemini/gemini-2.5-flash-lite
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: chat
+      max_tokens: 65536  # Output token limit
+      input_cost_per_token: 0.00000015  # $0.15 per 1M tokens (Flash-Lite pricing)
+      output_cost_per_token: 0.00000125 # $1.25 per 1M tokens (Flash-Lite pricing)
+      supports_vision: true
+      supports_function_calling: true
+      supports_assistant_prefill: false
+
+  # =============================================================================
+  # GEMINI 2.0 SERIES - NEXT GENERATION MODELS
+  # =============================================================================
+
+  - model_name: gemini-2.0-flash
+    litellm_params:
+      model: gemini/gemini-2.0-flash
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: chat
+      max_tokens: 32768  # Estimated output token limit
+      input_cost_per_token: 0.0000001   # $0.10 per 1M tokens (text/image/video)
+      output_cost_per_token: 0.0000004  # $0.40 per 1M tokens
+      cache_read_input_token_cost: 0.000000025  # $0.025 per 1M tokens
+      supports_vision: true
+      supports_function_calling: true
+      supports_assistant_prefill: false
+
+  - model_name: gemini-2.0-flash-lite
+    litellm_params:
+      model: gemini/gemini-2.0-flash-lite
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: chat
+      max_tokens: 32768  # Estimated output token limit
+      input_cost_per_token: 0.000000075  # $0.075 per 1M tokens
+      output_cost_per_token: 0.0000003   # $0.30 per 1M tokens
+      supports_vision: true
+      supports_function_calling: true
+      supports_assistant_prefill: false
+
+  # =============================================================================
+  # TEXT-TO-SPEECH MODELS
+  # =============================================================================
+
+  - model_name: gemini-2.5-flash-preview-tts
+    litellm_params:
+      model: gemini/gemini-2.5-flash-preview-tts
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: audio_speech
+      max_tokens: 4096   # Text input limit estimate
+      input_cost_per_character: 0.0000005  # $0.50 per 1M characters
+      output_cost_per_token: 0.00001      # $10.00 per 1M audio tokens
+      supports_vision: false
+      supports_function_calling: false
+      supports_assistant_prefill: false
+
+  - model_name: gemini-2.5-pro-preview-tts
+    litellm_params:
+      model: gemini/gemini-2.5-pro-preview-tts
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: audio_speech
+      max_tokens: 4096   # Text input limit estimate
+      input_cost_per_character: 0.000001   # $1.00 per 1M characters
+      output_cost_per_token: 0.00002      # $20.00 per 1M audio tokens
+      supports_vision: false
+      supports_function_calling: false
+      supports_assistant_prefill: false
+
+  # =============================================================================
+  # IMAGE GENERATION MODELS
+  # =============================================================================
+
+  - model_name: gemini-2.5-flash-image-preview
+    litellm_params:
+      model: gemini/gemini-2.5-flash-image-preview
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: image_generation
+      max_tokens: 4096   # Text input limit estimate
+      input_cost_per_token: 0.0000003    # $0.30 per 1M tokens (text/image)
+      output_cost_per_image: 0.039       # $0.039 per image (1024x1024px)
+      supports_vision: true
+      supports_function_calling: false
+      supports_assistant_prefill: false
+
+  - model_name: gemini-2.0-flash-preview-image-generation
+    litellm_params:
+      model: gemini/gemini-2.0-flash-preview-image-generation
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: image_generation
+      max_tokens: 4096   # Text input limit estimate
+      input_cost_per_token: 0.0000001    # $0.10 per 1M tokens (text/image/video)
+      output_cost_per_image: 0.039       # $0.039 per image (1024x1024px)
+      supports_vision: true
+      supports_function_calling: false
+      supports_assistant_prefill: false
+
+# =============================================================================
+# CONFIGURATION NOTES
+# =============================================================================
+# 
+# API Key Setup:
+# - Set GEMINI_API_KEY environment variable with your Google AI Studio API key
+# - Get your API key from: https://aistudio.google.com/apikey
+#
+# Model Selection Rationale:
+# - Excluded deprecated models: gemini-1.5-flash, gemini-1.5-flash-8b, gemini-1.5-pro
+# - Focused on current generation models (2.5 and 2.0 series)
+# - Included specialized models for TTS and image generation
+#
+# Pricing Structure:
+# - Uses paid tier pricing (free tier available for testing)
+# - Audio input costs more than text/image/video input
+# - Thinking tokens included in output pricing for reasoning models
+# - Batch API available for 50% cost reduction (not configured here)
+#
+# Context Caching:
+# - Available for most models to reduce costs on repeated content
+# - Storage cost: $1.00-4.50 per 1M tokens per hour depending on model
+#
+# Live API Support:
+# - Available for specific models (not configured in this YAML)
+# - Real-time bidirectional voice/video interactions
+#
+# Rate Limits:
+# - Free tier: Lower rate limits for testing
+# - Paid tier: Higher rate limits and additional features
+# - See: https://ai.google.dev/gemini-api/docs/rate-limits
+#
+# =============================================================================

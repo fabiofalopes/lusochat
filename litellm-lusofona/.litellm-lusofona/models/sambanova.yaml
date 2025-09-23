@@ -1,7 +1,17 @@
 # sambanova.yaml
 # 🚀 SambaNova Model Configurations
-# Information verified and updated based on official SambaNova documentation as of August 7, 2025.
-# Pricing has been integrated based on the provided rate sheet.
+# Information verified and updated based on official SambaNova documentation as of September 23, 2025.
+# Pricing has been integrated based on the official SambaCloud pricing sheet.
+# 
+# NOTE: Rate limits configured for SambaNova Free Tier (no payment method linked)
+# - Production models: Higher RPM/RPD limits for most models
+# - Preview models: Limited capacity, may be removed at short notice
+# - To upgrade to Developer Tier: Link a payment method in SambaCloud billing
+#
+# PRICING NOTES:
+# - All pricing is per 1M tokens unless specified otherwise
+# - Vision models: Images are converted to 6,432 input tokens and billed at that amount
+# - Audio models: Priced per hour of input audio duration ($0.10/hour)
 
 model_list:
   # -------------------------------------------
@@ -14,14 +24,13 @@ model_list:
       model: sambanova/Meta-Llama-3.1-8B-Instruct
       api_base: https://api.sambanova.ai/v1
       api_key: os.environ/SAMBANOVA_API_KEY
-      rpm: 480
+      rpm: 480                 # Free Tier RPM
       # max_tokens: 16384
-      input_cost_per_token: 0.0000001  # $0.10 per 1M tokens
-      output_cost_per_token: 0.0000002 # $0.20 per 1M tokens
+      input_cost_per_token: 0.0000001   # $0.10 per 1M tokens
+      output_cost_per_token: 0.0000002  # $0.20 per 1M tokens
     model_info:
-      host_node: sambanova
-      category: "production"
-      rpd: 72000
+      mode: chat
+      max_tokens: 16384
       max_output_tokens: 4096
 
   # SambaNova - Meta Llama 3.3 70B Instruct
@@ -30,14 +39,13 @@ model_list:
       model: sambanova/Meta-Llama-3.3-70B-Instruct
       api_base: https://api.sambanova.ai/v1
       api_key: os.environ/SAMBANOVA_API_KEY
-      rpm: 120
-      # max_tokens: 131072
-      input_cost_per_token: 0.0000006  # $0.60 per 1M tokens
-      output_cost_per_token: 0.0000012 # $1.20 per 1M tokens
+      rpm: 80                  # Free Tier RPM
+      # max_tokens: 128000
+      input_cost_per_token: 0.0000006   # $0.60 per 1M tokens
+      output_cost_per_token: 0.0000012  # $1.20 per 1M tokens
     model_info:
-      host_node: sambanova
-      category: "production"
-      rpd: 12000
+      mode: chat
+      max_tokens: 128000
       max_output_tokens: 8192
 
   # SambaNova - DeepSeek-R1-Distill-Llama-70B
@@ -46,14 +54,13 @@ model_list:
       model: sambanova/DeepSeek-R1-Distill-Llama-70B
       api_base: https://api.sambanova.ai/v1
       api_key: os.environ/SAMBANOVA_API_KEY
-      rpm: 80
-      # max_tokens: 131072
-      input_cost_per_token: 0.0000007  # $0.70 per 1M tokens
-      output_cost_per_token: 0.0000014 # $1.40 per 1M tokens
+      rpm: 80                  # Free Tier RPM
+      # max_tokens: 128000
+      input_cost_per_token: 0.0000007   # $0.70 per 1M tokens
+      output_cost_per_token: 0.0000014  # $1.40 per 1M tokens
     model_info:
-      host_node: sambanova
-      category: "production"
-      rpd: 12000
+      mode: chat
+      max_tokens: 128000
       max_output_tokens: 8192
 
   # SambaNova - DeepSeek R1 (Priced as DeepSeek-R1-0528)
@@ -62,14 +69,12 @@ model_list:
       model: sambanova/DeepSeek-R1
       api_base: https://api.sambanova.ai/v1
       api_key: os.environ/SAMBANOVA_API_KEY
-      rpm: 30
+      rpm: 20                  # Free Tier RPM
       # max_tokens: 32768
       input_cost_per_token: 0.000005    # $5.00 per 1M tokens
       output_cost_per_token: 0.000007   # $7.00 per 1M tokens
     model_info:
-      host_node: sambanova
-      category: "production"
-      rpd: 3000
+      mode: chat
       max_output_tokens: 4096
 
   # SambaNova - DeepSeek V3 0324
@@ -78,14 +83,26 @@ model_list:
       model: sambanova/DeepSeek-V3-0324
       api_base: https://api.sambanova.ai/v1
       api_key: os.environ/SAMBANOVA_API_KEY
-      rpm: 30
+      rpm: 20                  # Free Tier RPM
       # max_tokens: 32768
       input_cost_per_token: 0.000003    # $3.00 per 1M tokens
-      output_cost_per_token: 0.0000045   # $4.50 per 1M tokens
+      output_cost_per_token: 0.0000045  # $4.50 per 1M tokens
     model_info:
-      host_node: sambanova
-      category: "production"
-      rpd: 3000
+      mode: chat
+      max_output_tokens: 4096
+
+  # SambaNova - DeepSeek V3.1
+  - model_name: SambaNova-DeepSeek-V3.1
+    litellm_params:
+      model: sambanova/DeepSeek-V3.1
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 20                  # Free Tier RPM
+      # max_tokens: 32768
+      input_cost_per_token: 0.000003    # $3.00 per 1M tokens
+      output_cost_per_token: 0.0000045  # $4.50 per 1M tokens
+    model_info:
+      mode: chat
       max_output_tokens: 4096
 
   # -------------------------------------------
@@ -98,16 +115,28 @@ model_list:
       model: sambanova/Whisper-Large-v3
       api_base: https://api.sambanova.ai/v1
       api_key: os.environ/SAMBANOVA_API_KEY
-      rpm: 300
+      rpm: 150                 # Free Tier RPM
       input_cost_per_second: 0.00002778 # $0.10 per hour of audio
       output_cost_per_token: 0          # No output cost
     model_info:
-      host_node: sambanova
-      category: "preview"
-      rpd: 45000
-      max_file_size_mb: 25
-      supports_audio: true
       mode: audio_transcription
+      max_file_size_mb: 25
+      supports_audio_input: true
+
+  # SambaNova - OpenAI GPT-OSS-120B
+  - model_name: SambaNova-OpenAI-GPT-OSS-120B
+    litellm_params:
+      model: sambanova/gpt-oss-120b
+      api_base: https://api.sambanova.ai/v1
+      api_key: os.environ/SAMBANOVA_API_KEY
+      rpm: 20                  # Free Tier RPM
+      # max_tokens: 128000
+      input_cost_per_token: 0.00000022  # $0.22 per 1M tokens
+      output_cost_per_token: 0.00000059 # $0.59 per 1M tokens
+    model_info:
+      mode: chat
+      max_tokens: 128000
+      max_output_tokens: 8192
 
   # SambaNova - Llama 4 Maverick 17B 128E Instruct (Vision)
   - model_name: SambaNova-Llama-4-Maverick-17B-128E-Instruct
@@ -115,16 +144,16 @@ model_list:
       model: sambanova/Llama-4-Maverick-17B-128E-Instruct
       api_base: https://api.sambanova.ai/v1
       api_key: os.environ/SAMBANOVA_API_KEY
-      rpm: 40
-      # max_tokens: 131072
-      # Note: Images are billed as 6,432 input tokens
+      rpm: 20                  # Free Tier RPM
+      # max_tokens: 128000
+      # Note: Images are converted to 6,432 input tokens and billed at that amount
       input_cost_per_token: 0.00000063  # $0.63 per 1M tokens
       output_cost_per_token: 0.0000018  # $1.80 per 1M tokens
     model_info:
-      host_node: sambanova
-      category: "preview"
-      rpd: 6000
+      mode: chat
+      max_tokens: 128000
       max_output_tokens: 8192
+      max_file_size_mb: 20    # Up to 5 images, each ≤ 20 MB
       supports_vision: true
 
   # SambaNova - Llama 3.3 Swallow 70B Instruct v0.4
@@ -133,14 +162,12 @@ model_list:
       model: sambanova/Llama-3.3-Swallow-70B-Instruct-v0.4
       api_base: https://api.sambanova.ai/v1
       api_key: os.environ/SAMBANOVA_API_KEY
-      rpm: 40
+      rpm: 20                  # Free Tier RPM
       # max_tokens: 16384
-      input_cost_per_token: 0.0000006  # $0.60 per 1M tokens
-      output_cost_per_token: 0.0000012 # $1.20 per 1M tokens
+      input_cost_per_token: 0.0000006   # $0.60 per 1M tokens
+      output_cost_per_token: 0.0000012  # $1.20 per 1M tokens
     model_info:
-      host_node: sambanova
-      category: "preview"
-      rpd: 6000
+      mode: chat
       max_output_tokens: 4096
   
   # SambaNova - E5 Mistral 7B Instruct (Embedding Model)
@@ -149,16 +176,13 @@ model_list:
       model: sambanova/E5-Mistral-7B-Instruct
       api_base: https://api.sambanova.ai/v1
       api_key: os.environ/SAMBANOVA_API_KEY
-      rpm: 30
+      rpm: 20                  # Free Tier RPM
       # max_tokens: 4096
       input_cost_per_token: 0.00000013  # $0.13 per 1M tokens
-      output_cost_per_token: 0         # No output cost
+      output_cost_per_token: 0          # $0.00 per 1M tokens
     model_info:
-      host_node: sambanova
-      category: "preview"
-      rpd: 4500
+      mode: embedding
       max_output_tokens: 1024
-      supports_embeddings: true
       
   # SambaNova - Qwen3 32B
   - model_name: SambaNova-Qwen3-32B
@@ -166,12 +190,11 @@ model_list:
       model: sambanova/Qwen3-32B
       api_base: https://api.sambanova.ai/v1
       api_key: os.environ/SAMBANOVA_API_KEY
-      rpm: 20
+      rpm: 10                  # Free Tier RPM
       # max_tokens: 8192
       input_cost_per_token: 0.0000004   # $0.40 per 1M tokens
       output_cost_per_token: 0.0000008  # $0.80 per 1M tokens
     model_info:
-      host_node: sambanova
-      category: "preview"
-      rpd: 3000
+      mode: chat
+      max_tokens: 8192
       max_output_tokens: 2048
